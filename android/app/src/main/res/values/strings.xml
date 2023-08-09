@@ -1,0 +1,8 @@
+<resources>
+  <string name="app_name">First Serve</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="facebook_app_id">841784150950912</string>
+  <string name="facebook_client_token">b115e68a3577365f90d7d4311d31998c</string>
+  <string name="fb_login_protocol_scheme">fb841784150950912</string>
+</resources>
