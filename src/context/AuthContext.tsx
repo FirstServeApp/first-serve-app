@@ -47,8 +47,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isSocial, setSocial] = useState<boolean>(false)
 
   GoogleSignin.configure({
-    webClientId: Constants.expoConfig?.extra?.WEB_CLIENT_ID || '',
-    iosClientId: Constants.expoConfig?.extra?.IOS_CLIENT_ID || '',
+    webClientId: Constants.expoConfig?.extra?.WEB_CLIENT_ID
+      || '27486761319-aftp0a51jrjq0akdj6vp589id8jeancg.apps.googleusercontent.com',
+    iosClientId: Constants.expoConfig?.extra?.IOS_CLIENT_ID
+      || '27486761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
     profileImageSize: 200,
     offlineAccess: true,
   })

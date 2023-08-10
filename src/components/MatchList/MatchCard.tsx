@@ -32,7 +32,6 @@ const MatchCard: React.FC<Props> = ({ data, showTime = false, showDate = true })
   const { user } = useAuth()
   const isOpponentWins = data.winner.toLowerCase() === 'opponent'
   const { myScores, opponentScores } = getValidScoreValue(data)
-  console.log(myScores)
 
   return (
     <View>

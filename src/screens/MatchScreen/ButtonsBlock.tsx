@@ -4,7 +4,7 @@ import ButtonComponent from '../../components/UI/Button'
 import { useAuth } from '../../context/AuthContext'
 import { useMatch, Player, GameStates } from '../../context/MatchContext'
 import { TextL } from '../../styles/typography'
-import { ButtonContainer, ButtonRow } from './styles'
+import { ButtonRow } from './styles'
 
 
 type Props = {
@@ -16,7 +16,7 @@ const DrawingBlock: React.FC<Props> = memo(({ name }) => {
   const { setDrawingWinner, setCurrentState, opponentName } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <TextL>Who won the drawing?</TextL>
       <ButtonComponent
         title={name || 'Me'} size="M"
@@ -33,7 +33,7 @@ const DrawingBlock: React.FC<Props> = memo(({ name }) => {
           setCurrentState(GameStates.gameFirstStep)
         }}
       />
-    </ButtonContainer>
+    </>
   )
 })
 
@@ -41,7 +41,7 @@ const FirstServeBlock: React.FC<Props> = memo(({ name }) => {
   const { opponentName, setCurrentServer, setCurrentState } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <TextL>Who is serving?</TextL>
       <ButtonComponent
         title={name || 'Me'} size="M"
@@ -58,7 +58,7 @@ const FirstServeBlock: React.FC<Props> = memo(({ name }) => {
           setCurrentServer(Player.opponent)
         }}
       />
-    </ButtonContainer>
+    </>
   )
 })
 
@@ -66,7 +66,7 @@ const GameStepOne: React.FC<Props> = memo(({ isRed }) => {
   const { setCurrentState, setDrawingServe } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <ButtonComponent
         title="1st Serve"
         size="M"
@@ -85,7 +85,7 @@ const GameStepOne: React.FC<Props> = memo(({ isRed }) => {
           setCurrentState(GameStates.gameSecondStep)
         }}
       />
-    </ButtonContainer>
+    </>
   )
 })
 
@@ -93,7 +93,7 @@ const ReturnGameStepOne: React.FC<Props> = memo(({ isRed }) => {
   const { setCurrentState, setGameScore, drawingWinner } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <ButtonRow>
         <ButtonComponent
           title="1st Serve"
@@ -116,7 +116,7 @@ const ReturnGameStepOne: React.FC<Props> = memo(({ isRed }) => {
         type={isRed ? 'opponent' : 'primary'}
         onPress={() => setGameScore(drawingWinner, 'Double fault')}
       />
-    </ButtonContainer>
+    </>
   )
 })
 
@@ -124,7 +124,7 @@ const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
   const { setGameScore, drawingWinner } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <ButtonRow>
         <ButtonComponent
           title="Ace"
@@ -157,7 +157,7 @@ const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
           onPress={() => setGameScore(drawingWinner, 'Unforced error')}
         />
       </ButtonRow>
-    </ButtonContainer>
+    </>
   )
 })
 
@@ -165,7 +165,7 @@ const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
   const { setGameScore, drawingWinner } = useMatch()
 
   return (
-    <ButtonContainer>
+    <>
       <ButtonComponent
         title="Winner"
         size="M"
@@ -188,7 +188,7 @@ const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
           onPress={() => setGameScore(drawingWinner, 'Unforced error')}
         />
       </ButtonRow>
-    </ButtonContainer>
+    </>
   )
 })
 

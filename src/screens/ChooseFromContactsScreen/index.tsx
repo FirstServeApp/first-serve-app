@@ -24,7 +24,7 @@ const ChooseFromContactsScreen: React.FC<Props> = React.memo(({ route }) => {
     Object.keys(contacts).forEach(key => {
       const filteredContacts = contacts[key].filter(contact => {
         return contact.name.toLowerCase().includes(query.toLowerCase())
-      })
+      }).sort()
       if (filteredContacts.length > 0) {
         filteredData[key] = filteredContacts
       }

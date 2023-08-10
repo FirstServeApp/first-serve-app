@@ -3,10 +3,10 @@ import COLORS from '../../styles/colors'
 import { Dimensions, StyleSheet } from 'react-native'
 
 
-const { bgGrey, darkGrey } = COLORS
+const { bgGrey } = COLORS
 
 
-export const Container = styled.SafeAreaView`
+export const Container = styled.View`
   flex: 1;
 `
 
@@ -27,9 +27,10 @@ export const TopBlockWrap = styled.View`
   align-items: center;
 `
 
-export const ButtonContainer = styled.View`
+export const ButtonContainer = styled.View<{ bottomInset: number }>`
   width: 100%;
   padding: 16px;
+  padding-bottom: ${({ bottomInset }) => `${bottomInset}px`};
   flex-direction: column;
   justify-content: center;
   align-items: center;

@@ -1,7 +1,7 @@
 import ButtonComponent from '../../components/UI/Button'
 import { Header2, TextS } from '../../styles/typography'
-import { Container } from '../../components/UI/Container'
-import { Subtitle, ButtonsBlock, LinkWrap } from './styles'
+import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { Subtitle, LinkWrap } from './styles'
 import Link from '../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
 import { UnauthenticatedNavigationProps } from '../../navigation/UnauthenticatedNavigation'
@@ -14,6 +14,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import Toast from 'react-native-toast-message'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const LoginScreen: React.FC = () => {
@@ -46,7 +47,7 @@ const LoginScreen: React.FC = () => {
   }
 
   return (
-    <Container>
+    <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <Header2>Log in</Header2>
       <Subtitle>
@@ -68,7 +69,7 @@ const LoginScreen: React.FC = () => {
           <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Forgot password</Link>
         </LinkWrap>
       </ButtonsBlock>
-    </Container>
+    </SafeAreaView>
   )
 }
 

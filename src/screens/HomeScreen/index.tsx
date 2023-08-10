@@ -49,7 +49,7 @@ const HomeScreen: React.FC = () => {
     <HomeContainer>
       <GestureHandlerRootView>
         <StatusBar style="dark" />
-        <ScrollView>
+        <ScrollView bounces={false}>
           <HomeHeader onOpen={onOpen} />
           <MatchList setFiltersVisible={setFilterPopupVisible} data={data} isLoading={isLoading} />
         </ScrollView>

@@ -1,8 +1,8 @@
 import ButtonComponent from '../../components/UI/Button'
 import Checkbox from '../../components/UI/Button/Checkbox'
 import { Header2, TextS } from '../../styles/typography'
-import { Container } from '../../components/UI/Container'
-import { Subtitle, ConsentFormContainer, ConsentFormText, ButtonsBlock } from './styles'
+import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { Subtitle, ConsentFormContainer, ConsentFormText } from './styles'
 import Link from '../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
@@ -14,6 +14,7 @@ import { UnauthenticatedNavigationProps } from '../../navigation/Unauthenticated
 import { RegistrationFormData, registrationSchema } from '../../validations/authValidations'
 import { useAuth } from '../../context/AuthContext'
 import Toast from 'react-native-toast-message'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const RegisterScreen: React.FC = () => {
@@ -47,7 +48,7 @@ const RegisterScreen: React.FC = () => {
   }
 
   return (
-    <Container>
+    <SafeAreaView style={styles.container}>
       <Header2>Create account</Header2>
       <Subtitle>
         <TextS>Already have an account?&nbsp;</TextS>
@@ -78,7 +79,7 @@ const RegisterScreen: React.FC = () => {
           onPress={methods.handleSubmit(onSignup)}
         />
       </ButtonsBlock>
-    </Container>
+    </SafeAreaView>
   )
 }
 

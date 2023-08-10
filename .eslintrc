@@ -22,7 +22,6 @@
     "func-style": "error",
     "no-bitwise": "error",
     "no-use-before-define": "error",
-    // "no-confusing-arrow": "error",
     "no-eval": "error",
     "no-floating-decimal": "error",
     "no-implied-eval": "error",
@@ -107,6 +106,8 @@
     "react/jsx-indent": ["error", 2, {
       "checkAttributes": true
     }],
+    "react-native/no-color-literals": "off",
+    "react-native/sort-styles": "off",
     "react/jsx-indent-props": ["error", 2],
     "react/jsx-key": "error",
     "react/jsx-max-props-per-line": ["error", {
@@ -122,7 +123,6 @@
     "react-native/no-inline-styles": "error",
     "react-native/no-unused-styles": "error",
     "react-native/split-platform-components": "error",
-    "react-native/no-color-literals": "error",
     "react-native/no-raw-text": "off",    // ??????
     "rest-spread-spacing": "error",
     "semi": ["error", "never"],

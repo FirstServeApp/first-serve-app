@@ -3,18 +3,20 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import MatchPopup from '../../components/MatchPopup'
 import ButtonsBlock from './ButtonsBlock'
 import MatchCard from './MatchCard'
-import { Container, CardBlockContainer, styles, TopBlockWrap } from './styles'
+import { Container, CardBlockContainer, styles, TopBlockWrap, ButtonContainer } from './styles'
 import MatchHeader from '../../components/MatchHeader'
 import { useFocusEffect } from '@react-navigation/native'
 import { useMatch } from '../../context/MatchContext'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthenticatedStackParams } from '../../navigation/AuthenticatedNavigation'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
 type Props = NativeStackScreenProps<AuthenticatedStackParams, 'Match'>
 
 const MatchScreen: React.FC<Props> = ({ navigation }) => {
   const { isMatchPaused, pauseMatch, continueMatch } = useMatch()
+  const { bottom } = useSafeAreaInsets()
 
   useFocusEffect(useCallback(() => {
     if (isMatchPaused) {
@@ -39,7 +41,9 @@ const MatchScreen: React.FC<Props> = ({ navigation }) => {
             <MatchCard />
           </CardBlockContainer>
         </TopBlockWrap>
-        <ButtonsBlock />
+        <ButtonContainer bottomInset={bottom}>
+          <ButtonsBlock />
+        </ButtonContainer>
         <MatchPopup />
       </GestureHandlerRootView>
     </Container>

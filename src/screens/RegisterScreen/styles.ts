@@ -18,12 +18,3 @@ export const ConsentFormContainer = styled.View`
 export const ConsentFormText = styled.View`
   flex-direction: row;
 `
-
-export const ButtonsBlock = styled.View`
-  padding: 16px;
-  gap: 16px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-`

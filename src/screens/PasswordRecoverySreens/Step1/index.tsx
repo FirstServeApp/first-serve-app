@@ -1,6 +1,6 @@
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2, TextS } from '../../../styles/typography'
-import { Container } from '../../../components/UI/Container'
+import { styles } from '../../../components/UI/Container'
 import { ButtonsBlock, LinkWrap, Subtitle } from '../styles'
 import Link from '../../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import { EmailFormData, emailSchema } from '../../../validations/authValidations
 import OneFieldForm from '../../../components/OneFieldForm'
 import AuthService from '../../../services/AuthService'
 import { useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const PasswordRecoveryScreen: React.FC = () => {
@@ -36,7 +37,7 @@ const PasswordRecoveryScreen: React.FC = () => {
   }
 
   return (
-    <Container>
+    <SafeAreaView style={styles.container}>
       <Header2>Password recovery</Header2>
       <Subtitle>
         <TextS>Enter the email to which your account was linked</TextS>
@@ -62,7 +63,7 @@ const PasswordRecoveryScreen: React.FC = () => {
           <Link onPress={() => navigation.navigate('Login')}>I remembered password</Link>
         </LinkWrap>
       </ButtonsBlock>
-    </Container>
+    </SafeAreaView>
   )
 }
 

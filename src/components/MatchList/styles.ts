@@ -113,7 +113,7 @@ export const MatchListContainer = styled.View`
   padding: 0 16px;
   margin-top: 16px;
   gap: 16px;
-  margin-bottom: 96px;  /* DELETE (maybe) */
+  margin-bottom: 112px;  /* DELETE (maybe) */
 `
 
 export const NoMatchesContainer = styled.View`

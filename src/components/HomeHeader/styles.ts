@@ -1,10 +1,10 @@
 import styled from 'styled-components/native'
 
 
-export const HomeHeaderContainer = styled.View`
+export const HomeHeaderContainer = styled.View<{ topInsets: number }>`
   width: 100%;
   padding: 16px;
-  padding-top: 40px; /* DELTETE */
+  padding-top: ${({ topInsets }) => `${topInsets}px`};
   background: white;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;

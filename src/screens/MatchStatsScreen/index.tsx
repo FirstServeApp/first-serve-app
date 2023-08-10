@@ -4,6 +4,7 @@ import {
   Container,
   CardBlockContainer,
   StatsBlockContainer,
+  styles,
 } from './styles'
 import { ScrollView, View } from 'react-native'
 import MatchCard from '../../components/MatchList/MatchCard'
@@ -45,7 +46,7 @@ const MatchStatsScreen: React.FC<Props> = ({ route }) => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.scrollView} bounces={false}>
       <Container>
         <View>
           <CardBlockContainer>
