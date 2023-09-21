@@ -17,6 +17,8 @@ export const ButtonsBlock = styled.View`
   bottom: 16px;
   right: 0;
   left: 0;
+  justify-content: center;
+  align-items: center;
 `
 
 export const styles = StyleSheet.create({

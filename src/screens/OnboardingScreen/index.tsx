@@ -1,21 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   IndicatorContainer,
   IndicatorDot,
-  OnboardingContainer,
-  ButtonContainer,
+  styles,
   SlideContainer,
   SlideHeader,
   ActiveIndicatorDot,
   ActiveIndicatorDotWrap,
 } from './styles'
 import ButtonComponent from '../../components/UI/Button'
+import { ButtonsBlock } from '../../components/UI/Container'
 import { UnauthenticatedNavigationProps } from '../../navigation/UnauthenticatedNavigation'
 import { useNavigation } from '@react-navigation/native'
 import { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native'
 import { Dimensions } from 'react-native'
 import { Illustration, IllustrationsNames } from '../../components/UI/Illustration'
 import { StoreKeys, setItemInStore } from '../../utils/secureStoreUtils'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const { width } = Dimensions.get('window')
@@ -66,13 +67,14 @@ const OnboardingScreen: React.FC = () => {
   }
 
   return (
-    <OnboardingContainer>
+    <SafeAreaView style={styles.onboardingContainer}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         {slides.map((slide, index) => (
           <SlideContainer key={index}>
@@ -94,7 +96,7 @@ const OnboardingScreen: React.FC = () => {
           }
         })}
       </IndicatorContainer>
-      <ButtonContainer>
+      <ButtonsBlock>
         {currentIndex < slides.length - 1 ? (
           <ButtonComponent
             title="Skip"
@@ -109,8 +111,8 @@ const OnboardingScreen: React.FC = () => {
             onPress={handleStart}
           />
         )}
-      </ButtonContainer>
-    </OnboardingContainer>
+      </ButtonsBlock>
+    </SafeAreaView>
   )
 }
 

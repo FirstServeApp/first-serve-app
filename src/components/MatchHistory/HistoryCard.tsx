@@ -23,8 +23,12 @@ const getValidScore = (score: number) => {
   }
 }
 
-const getValidServe = (serve: string) => {
-  if (serve === 'Winner' || serve === 'Ace' || serve === 'Return winner') {
+const getValidServe = (serve: string, winner?: string, server?: string) => {
+  if (serve === 'Winner' && server === 'OPPONENT' && winner === 'ME') {
+    return <TextS color={COLORS.blue}>Return winner</TextS>
+  } else if (serve === 'Winner' && server === 'ME' && winner === 'OPPONENT') {
+    return <TextS color={COLORS.blue}>Return winner</TextS>
+  } else if (serve === 'Winner' || serve === 'Ace') {
     return <TextS color={COLORS.blue}>{serve}</TextS>
   } else if (serve === 'Forced error' || serve === 'Unforced error' || serve === 'Double fault') {
     return <TextS color={COLORS.orange}>{serve}</TextS>
@@ -33,7 +37,12 @@ const getValidServe = (serve: string) => {
   }
 }
 
-const getValidServer = (winner: string) => {
+const getValidServer = (winner: string, serve?: string) => {
+  if (winner === 'ME' && (serve?.includes('error') || serve === 'Double fault')) {
+    return 'Opponent'
+  } else if (winner === 'OPPONENT' && (serve?.includes('error') || serve === 'Double fault')) {
+    return 'You'
+  }
   if (winner === 'ME') {
     return 'You'
   } else {
@@ -77,11 +86,11 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
               if (arr.length === index + 1) {
                 return (
                   <MatchHistoryCardRow key={index} last>
-                    <TextS>Game  </TextS>
+                    <TextS> Game  </TextS>
                     <RightBlock>
                       <TextS color={COLORS.darkGrey}>{item.serve}S  </TextS>
-                      {getValidServe(item.type)}
-                      <TextS>  {getValidServer(item.server)}</TextS>
+                      {getValidServe(item.type, item.server, game.server)}
+                      <TextS>  {getValidServer(item.server, item.type)}</TextS>
                     </RightBlock>
                   </MatchHistoryCardRow>
                 )
@@ -96,8 +105,8 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
                   </RightBlock>
                   <RightBlock>
                     <TextS color={COLORS.darkGrey}>{item.serve}S  </TextS>
-                    {getValidServe(item.type)}
-                    <TextS>  {getValidServer(item.server)}</TextS>
+                    {getValidServe(item.type, item.server, game.server)}
+                    <TextS>  {getValidServer(item.server, item.type)}</TextS>
                   </RightBlock>
                 </MatchHistoryCardRow>
               )

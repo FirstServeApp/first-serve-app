@@ -14,7 +14,7 @@ export const $api = axios.create({
 $api.interceptors.response.use(
   res => res,
   async (error: any) => {
-    const { status, config } = error.response!
+    const { status, config } = error.response
     const originalConfig = config
     let isRefreshing = false
 

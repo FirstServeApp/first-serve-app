@@ -6,7 +6,7 @@ import { TextS } from '../styles/typography'
 import { useNavigation } from '@react-navigation/native'
 import { getShareText } from '../utils/matchUtils'
 import { Share } from 'react-native'
-import { CreateMatchSet, Match, Set } from '../services/matchService'
+import { Match, Set } from '../services/matchService'
 import StartMatchScreen from '../screens/StartMatchScreen'
 import COLORS from '../styles/colors'
 import PlayerDetailsScreen from '../screens/PlayerDetailsScreen'
@@ -20,6 +20,7 @@ import { useFilters } from '../context/FiltersContext'
 import MatchScreen from '../screens/MatchScreen'
 import WinnerScreen from '../screens/WinnerScreen'
 import EditMatchScreen from '../screens/EditMatchScreen'
+import { PopupNames, usePopup } from '../context/PopupContext'
 
 export type AuthenticatedStackParams = {
   Home: undefined;
@@ -30,7 +31,7 @@ export type AuthenticatedStackParams = {
   ChooseFromContacts: { player: 'me' | 'opponent' };
   PlayersFilter: undefined;
   Match: undefined;
-  Winner: { isOpponentWins: boolean, opponentName: string, gameSets: CreateMatchSet[], totalSeconds: number };
+  Winner: { data: Match<Set> };
 }
 
 export type AuthenticatedNavigationProps = NativeStackNavigationProp<AuthenticatedStackParams>
@@ -40,6 +41,7 @@ const AuthenticatedStack = createNativeStackNavigator<AuthenticatedStackParams>(
 const AuthenticatedNavigation = () => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const { setPlayersFilter, playersFilter } = useFilters()
+  const { showPopup } = usePopup()
 
   const onShare = async (matchData?: Match<Set>, userName?: string) => {
     if (matchData && userName) {
@@ -73,7 +75,8 @@ const AuthenticatedNavigation = () => {
           animation: 'fade',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <TextS>Match statistics</TextS>,
+          headerTitle: () => <TextS>Edit match</TextS>,
+          headerRight: () => <IconBtn icon="trash" onPress={() => showPopup(PopupNames.DeleteMatch)} />,
         }}
         component={EditMatchScreen}
       />
@@ -83,7 +86,7 @@ const AuthenticatedNavigation = () => {
           animation: 'fade',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <TextS>Edit match</TextS>,
+          headerTitle: () => <TextS>Match statistics</TextS>,
           headerRight: () => (<HeaderIconsWrap>
             <IconBtn
               icon="edit"
@@ -101,7 +104,7 @@ const AuthenticatedNavigation = () => {
         name="StartMatch"
         options={{
           headerShown: true,
-          animation: 'fade_from_bottom',
+          animation: 'fade',
           headerTitle: () => <TextS>Match settings</TextS>,
         }}
         component={StartMatchScreen}
@@ -117,7 +120,7 @@ const AuthenticatedNavigation = () => {
         name="Winner"
         options={{
           headerShown: true,
-          animation: 'fade_from_bottom',
+          animation: 'fade',
           headerTitle: () => <TextS>Match tracking</TextS>,
           headerLeft: () => null,
         }}

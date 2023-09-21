@@ -6,17 +6,6 @@ export const Subtitle = styled.View`
   margin-bottom: 12px;
 `
 
-export const ButtonsBlock = styled.View`
-  padding: 16px;
-  gap: 16px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  justify-content: center;
-  align-items: center;
-`
-
 export const LinkWrap = styled.View`
   width: 100%;
   align-items: center

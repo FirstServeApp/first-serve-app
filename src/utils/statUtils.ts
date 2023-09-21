@@ -3,7 +3,7 @@ import { MatchDetails } from '../services/matchService'
 
 type DataItem = 'aces' | 'doubleFaults' | 'winners' | 'forcedErrors' | 'unforcedErrors' | 'totalWon' |
   'totalServiceWon' | 'totalReturnWon' | 'firstServes' | 'secondServes' | 'firstServePointsWon' |
-  'secondServePointsWon' | 'breakPointsSaved' | 'breakPointsWon' | 'serviceGames' | 'returnGames'
+  'secondServePointsWon' | 'breakPointsWon' | 'aggressiveMargin'
 
 const getTextByFieldName = (field: DataItem) => {
   switch (field) {
@@ -31,13 +31,10 @@ const getTextByFieldName = (field: DataItem) => {
       return '1st Serve points won'
     case 'secondServePointsWon':
       return '2nd Serve points won'
-    case 'breakPointsSaved':
     case 'breakPointsWon':
       return 'Break points won'
-    case 'serviceGames':
-      return 'Service Games'
-    case 'returnGames':
-      return 'Return Games'
+    case 'aggressiveMargin':
+      return 'Aggressive margin'
     default:
       return null
   }
@@ -63,8 +60,8 @@ export const getStatInfo = (data: MatchDetails, item: string, selectedSet: Butto
   return {
     title: getTextByFieldName(item as DataItem),
     myText: myInfo?.total ? `${myInfo.count}/${myInfo.total}` : myInfo.count,
-    myPercent: myInfo?.total ? Math.floor(myInfo.count / myInfo.total * 100) : undefined,
+    myPercent: myInfo?.total ? Math.floor(myInfo.count / myInfo.total * 100).toString() : undefined,
     opponentText: oppInfo?.total ? `${oppInfo.count}/${oppInfo.total}` : oppInfo.count,
-    opponentPercent: oppInfo?.total ? Math.floor(oppInfo.count / oppInfo.total * 100) : undefined,
+    opponentPercent: oppInfo?.total ? Math.floor(oppInfo.count / oppInfo.total * 100).toString() : undefined,
   }
 }

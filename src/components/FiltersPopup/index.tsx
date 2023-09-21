@@ -15,11 +15,21 @@ const FiltersPopup: React.FC<Props> = ({ visible, onClose }) => {
 
   return (
     <>
-      <DefaultPopup visible={visible} onClose={onClose} setShowDateFilter={setShowDateFilter} />
+      <DefaultPopup
+        visible={visible}
+        onClose={onClose}
+        onOpen={() => {
+          onClose()
+          setShowDateFilter(true)
+        }}
+      />
       <DateFilterPopup
         visible={showDateFilter}
         onClose={() => setShowDateFilter(false)}
-        onOtherPeriodOpen={() => setShowOtherDateFilter(true)}
+        onOpen={() => {
+          setShowDateFilter(false)
+          setShowOtherDateFilter(true)
+        }}
       />
       <OtherDatePopup visible={showOtherDateFilter} onClose={() => setShowOtherDateFilter(false)} />
     </>

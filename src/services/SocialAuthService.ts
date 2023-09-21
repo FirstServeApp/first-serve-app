@@ -31,6 +31,14 @@ class SocialAuthService {
       email: `${res.name.split(' ').join('_')}@facebook.com`,
     })
   }
+
+  appleSignin = async (appleId: string, email: string | null, name?: string | null) => {
+    return await $api.post<AxiosRequestConfig, TokensRes>('/auth/apple', {
+      email,
+      name,
+      appleId,
+    })
+  }
 }
 
 export default new SocialAuthService()

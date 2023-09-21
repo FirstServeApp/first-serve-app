@@ -1,7 +1,7 @@
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2, TextS } from '../../../styles/typography'
-import { styles } from '../../../components/UI/Container'
-import { ButtonsBlock, LinkWrap, Subtitle } from '../styles'
+import { styles, ButtonsBlock } from '../../../components/UI/Container'
+import { LinkWrap, Subtitle } from '../styles'
 import Link from '../../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
 import { UnauthenticatedNavigationProps } from '../../../navigation/UnauthenticatedNavigation'
@@ -12,6 +12,7 @@ import OneFieldForm from '../../../components/OneFieldForm'
 import AuthService from '../../../services/AuthService'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 const PasswordRecoveryScreen: React.FC = () => {
@@ -37,33 +38,35 @@ const PasswordRecoveryScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header2>Password recovery</Header2>
-      <Subtitle>
-        <TextS>Enter the email to which your account was linked</TextS>
-      </Subtitle>
-      <FormProvider {...methods}>
-        <OneFieldForm
-          name="email"
-          placeholder="Email"
-          autoCapitalize="none"
-          autoComplete="email"
-          autoFocus
-          editable={!isLoading}
-        />
-      </FormProvider>
-      <ButtonsBlock>
-        <ButtonComponent
-          title="Next"
-          loading={isLoading}
-          disabled={!methods.formState.isDirty || !methods.formState.isValid}
-          onPress={methods.handleSubmit(onSubmit)}
-        />
-        <LinkWrap>
-          <Link onPress={() => navigation.navigate('Login')}>I remembered password</Link>
-        </LinkWrap>
-      </ButtonsBlock>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.container}>
+        <Header2>Password recovery</Header2>
+        <Subtitle>
+          <TextS>Enter the email to which your account was linked</TextS>
+        </Subtitle>
+        <FormProvider {...methods}>
+          <OneFieldForm
+            name="email"
+            placeholder="Email"
+            autoCapitalize="none"
+            autoComplete="email"
+            autoFocus
+            editable={!isLoading}
+          />
+        </FormProvider>
+        <ButtonsBlock>
+          <ButtonComponent
+            title="Next"
+            loading={isLoading}
+            disabled={!methods.formState.isDirty || !methods.formState.isValid}
+            onPress={methods.handleSubmit(onSubmit)}
+          />
+          <LinkWrap>
+            <Link onPress={() => navigation.navigate('Login')}>I remembered password</Link>
+          </LinkWrap>
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

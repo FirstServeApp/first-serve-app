@@ -1,8 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2 } from '../../../styles/typography'
-import { Container } from '../../../components/UI/Container'
-import { ButtonsBlock } from '../styles'
+import { styles, ButtonsBlock } from '../../../components/UI/Container'
 import { useNavigation } from '@react-navigation/native'
 import {
   UnauthenticatedNavigationProps,
@@ -15,6 +14,8 @@ import AuthService from '../../../services/AuthService'
 import { useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import Input from '../../../components/UI/Input'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { TouchableWithoutFeedback, Keyboard } from 'react-native'
 
 
 type Props = NativeStackScreenProps<UnauthenticatedStackParams, 'PasswordRecoveryStep3'>
@@ -43,55 +44,57 @@ const ChangePasswordScreen: React.FC<Props> = ({ route }) => {
   }
 
   return (
-    <Container>
-      <Header2 style={{ marginBottom: 24 }}>Enter a new password</Header2>
-      <FormProvider {...methods}>
-        <Controller
-          control={methods.control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              placeholder="Password"
-              autoCapitalize="none"
-              autoComplete="password"
-              maxLength={16}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              error={methods.formState.errors.password?.message?.toString()}
-              editable={!isLoading}
-              secure
-            />
-          )}
-          name="password"
-        />
-        <Controller
-          control={methods.control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              placeholder="Confirm password"
-              autoCapitalize="none"
-              autoComplete="password"
-              maxLength={16}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable={!isLoading}
-              error={methods.formState.errors.confirmPassword?.message?.toString()}
-              secure
-            />
-          )}
-          name="confirmPassword"
-        />
-      </FormProvider>
-      <ButtonsBlock>
-        <ButtonComponent
-          title="Complete"
-          loading={isLoading}
-          disabled={!methods.formState.isDirty || !methods.formState.isValid}
-          onPress={methods.handleSubmit(onSubmit)}
-        />
-      </ButtonsBlock>
-    </Container>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.container}>
+        <Header2 style={{ marginBottom: 24 }}>Enter a new password</Header2>
+        <FormProvider {...methods}>
+          <Controller
+            control={methods.control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Password"
+                autoCapitalize="none"
+                autoComplete="password"
+                maxLength={16}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                error={methods.formState.errors.password?.message?.toString()}
+                editable={!isLoading}
+                secure
+              />
+            )}
+            name="password"
+          />
+          <Controller
+            control={methods.control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Confirm password"
+                autoCapitalize="none"
+                autoComplete="password"
+                maxLength={16}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                editable={!isLoading}
+                error={methods.formState.errors.confirmPassword?.message?.toString()}
+                secure
+              />
+            )}
+            name="confirmPassword"
+          />
+        </FormProvider>
+        <ButtonsBlock>
+          <ButtonComponent
+            title="Complete"
+            loading={isLoading}
+            disabled={!methods.formState.isDirty || !methods.formState.isValid}
+            onPress={methods.handleSubmit(onSubmit)}
+          />
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

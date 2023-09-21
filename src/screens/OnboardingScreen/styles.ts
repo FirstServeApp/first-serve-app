@@ -1,14 +1,16 @@
-import { Dimensions } from 'react-native'
+import { Dimensions, StyleSheet } from 'react-native'
 import styled from 'styled-components/native'
 import COLORS from '../../styles/colors'
 import { h1 } from '../../styles/mixins'
 
 const { width } = Dimensions.get('window')
 
-export const OnboardingContainer = styled.SafeAreaView`
-  flex: 1;
-  background: white;
-`
+export const styles = StyleSheet.create({
+  onboardingContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+})
 
 export const SlideContainer = styled.View`
   width: ${width}px;
@@ -30,7 +32,7 @@ export const IndicatorContainer = styled.View`
   justify-content: center;
   margin-bottom: 16px;
   position: absolute;
-  top: 48px;
+  top: 16px;
   width: 100%;
 `
 
@@ -57,14 +59,6 @@ export const ActiveIndicatorDot = styled.View`
   height: 6px;
   border-radius: 100px;
   background-color: ${COLORS.primary};
-`
-
-export const ButtonContainer = styled.View`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px;
 `
 
 export const SkipButtonText = styled.Text`

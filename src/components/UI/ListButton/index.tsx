@@ -12,6 +12,16 @@ import NavigationLink from '../Button/NavigationLink'
 import COLORS from '../../../styles/colors'
 
 
+const getListIconColor = (LeftIconBg?: string, dangerZone?: boolean): string => {
+  if (LeftIconBg) {
+    return 'transparent'
+  } else if (dangerZone) {
+    return COLORS.red
+  } else {
+    return COLORS.black
+  }
+}
+
 interface Props extends TouchableOpacityProps {
   title: string;
   leftIcon?: IconsNames;
@@ -23,7 +33,6 @@ interface Props extends TouchableOpacityProps {
   badgeText?: string;
 }
 
-
 const ListButton: React.FC<Props> = ({
   title, leftIcon, rightText, showRightChevron, leftIconBg, dangerZone = false, badgeText, showBadge, ...rest
 }) => {
@@ -32,7 +41,7 @@ const ListButton: React.FC<Props> = ({
       <LeftBlock>
         {leftIcon && (
           <LeftIconWrap background={leftIconBg}>
-            <Icon name={leftIcon} color={leftIconBg && 'transparent'} />
+            <Icon name={leftIcon} color={getListIconColor(leftIconBg, dangerZone)} />
           </LeftIconWrap>
         )}
         <TextL color={dangerZone ? COLORS.red : COLORS.black}>{title}</TextL>

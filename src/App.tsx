@@ -7,6 +7,8 @@ import { MatchProvider } from './context/MatchContext'
 import { FiltersProvider } from './context/FiltersContext'
 import ToastMessage from './components/UI/ToastMessage'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { PopupProvider } from './context/PopupContext'
+import ErrorBoundaryComponent from './components/ErrorBoundary'
 
 
 export default function App() {
@@ -22,19 +24,23 @@ export default function App() {
     }
 
     return (
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <StatusBar style="auto" />
-          <AuthProvider>
-            <MatchProvider>
+      <ErrorBoundaryComponent>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <StatusBar style="auto" />
+            <AuthProvider>
               <FiltersProvider>
-                <RootNavigation />
+                <PopupProvider>
+                  <MatchProvider>
+                    <RootNavigation />
+                  </MatchProvider>
+                </PopupProvider>
               </FiltersProvider>
-            </MatchProvider>
-          </AuthProvider>
-          <ToastMessage />
-        </NavigationContainer>
-      </SafeAreaProvider>
+            </AuthProvider>
+            <ToastMessage />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </ErrorBoundaryComponent>
     )
   } catch (err) {
     throw err

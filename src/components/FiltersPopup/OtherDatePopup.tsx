@@ -1,81 +1,82 @@
-import { Header1 } from '../../styles/typography'
+import { Header1, TextL } from '../../styles/typography'
 import IconBtn from '../UI/Button/IconBtn'
 import {
   FiltersPopupContainer,
   HeaderWrap,
+  SelectDateContainer,
 } from './styles'
-import BottomSheetPopup from '../UI/BottomSheet'
-import { useFilters } from '../../context/FiltersContext'
-import ListButton from '../UI/ListButton'
+import BottomSheetPopup2 from '../UI/BottomSheet'
+import { DateFilterNames, useFilters } from '../../context/FiltersContext'
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
-import React, { useState } from 'react'
-import { formatDate } from '../../utils/timeUtils'
-import { Platform } from 'react-native'
+import React from 'react'
+import { PopupBtn, PopupBtnsContainer } from '../MatchPopup/styles'
+import ButtonComponent from '../UI/Button'
 
 
 type Props = {
   visible: boolean;
-  onClose: () => void;
+  onClose(): void;
 }
 
-const OtherDatePopup: React.FC<Props> = React.memo(({ visible, onClose }) => {
-  const { otherPeriodStartDate, otherPeriodEndDate, setOtherPeriodStartDate, setOtherPeriodEndDate } = useFilters()
-  const [showStartDate, setShowStartDate] = useState(false)
-  const [showEndDate, setShowEndDate] = useState(false)
+const OtherPeriodPopup: React.FC<Props> = React.memo(({ visible, onClose }) => {
+  const { setDateFilter,
+    otherPeriodStartDate, otherPeriodEndDate, setOtherPeriodStartDate, setOtherPeriodEndDate } = useFilters()
 
   const handleStartDateChange = (event: DateTimePickerEvent, date?: Date) => {
-    if (date) {
+    if (date && event.type === 'set') {
       setOtherPeriodStartDate(date)
+      setDateFilter(DateFilterNames.Other)
     }
-    setShowStartDate(false)
   }
   const handleEndDateChange = (event: DateTimePickerEvent, date?: Date) => {
-    if (date) {
+    if (date && event.type === 'set') {
       setOtherPeriodEndDate(date)
+      setDateFilter(DateFilterNames.Other)
     }
-    setShowEndDate(false)
   }
 
   return (
-    <BottomSheetPopup
+    <BottomSheetPopup2
       visible={visible}
       onClose={onClose}
-      snapPoints={['30%']}
+      snapPoints={['35%']}
     >
       <FiltersPopupContainer>
         <HeaderWrap>
           <Header1>Other period</Header1>
           <IconBtn icon="cancel" type="light" onPress={onClose} />
         </HeaderWrap>
-        <ListButton
-          title="From:"
-          showBadge
-          badgeText={otherPeriodStartDate && formatDate(otherPeriodStartDate)}
-          onPress={() => setShowStartDate(true)} />
-        <ListButton
-          title="To:"
-          showBadge
-          badgeText={otherPeriodEndDate && formatDate(otherPeriodEndDate)}
-          onPress={() => setShowEndDate(true)} />
-        {showStartDate && (
+        <SelectDateContainer>
+          <TextL>From:</TextL>
           <DateTimePicker
+            testID="fromDatePicker"
             value={otherPeriodStartDate || new Date()}
             mode="date"
-            display={Platform.OS === 'ios' ? 'compact' : 'default'}
+            display="default"
             onChange={handleStartDateChange}
           />
-        )}
-        {showEndDate && (
+        </SelectDateContainer>
+        <SelectDateContainer>
+          <TextL>To:</TextL>
           <DateTimePicker
+            testID="toDatePicker"
             value={otherPeriodEndDate || new Date()}
             mode="date"
-            display={Platform.OS === 'ios' ? 'compact' : 'default'}
+            display="default"
             onChange={handleEndDateChange}
           />
-        )}
+        </SelectDateContainer>
+        <PopupBtnsContainer>
+          <PopupBtn>
+            <ButtonComponent title="Cancel" type="secondary" onPress={onClose} />
+          </PopupBtn>
+          <PopupBtn>
+            <ButtonComponent title="Save" onPress={onClose} />
+          </PopupBtn>
+        </PopupBtnsContainer>
       </FiltersPopupContainer>
-    </BottomSheetPopup>
+    </BottomSheetPopup2>
   )
 })
 
-export default OtherDatePopup
+export default OtherPeriodPopup

@@ -9,6 +9,7 @@ import { GroupedPlayers, groupPlayersByLetter } from '../../utils/matchUtils'
 import PlayersList from './PlayersList'
 import Loader from '../../components/UI/Loader'
 import { useFilters } from '../../context/FiltersContext'
+import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 const PlayersFilterScreen: React.FC = React.memo(() => {
@@ -52,19 +53,21 @@ const PlayersFilterScreen: React.FC = React.memo(() => {
   }
 
   return (
-    <>
-      <ChooseFromContactsHeader>
-        <SearchBar onChange={filterBySearch} />
-      </ChooseFromContactsHeader>
-      <Container>
-        <PlayersList data={filteredList} />
-        {playersFilter.length > 0 && (
-          <ButtonContainer>
-            <ButtonComponent title="Save" size="M" onPress={() => navigation.navigate('Home')} />
-          </ButtonContainer>
-        )}
-      </Container>
-    </>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <>
+        <ChooseFromContactsHeader>
+          <SearchBar onChange={filterBySearch} />
+        </ChooseFromContactsHeader>
+        <Container>
+          <PlayersList data={filteredList} />
+          {playersFilter.length > 0 && (
+            <ButtonContainer>
+              <ButtonComponent title="Save" size="M" onPress={() => navigation.navigate('Home')} />
+            </ButtonContainer>
+          )}
+        </Container>
+      </>
+    </TouchableWithoutFeedback>
   )
 })
 

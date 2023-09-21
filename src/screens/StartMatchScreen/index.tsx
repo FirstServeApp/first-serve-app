@@ -1,6 +1,6 @@
 import ButtonComponent from '../../components/UI/Button'
 import { TextS } from '../../styles/typography'
-import { Container, TextContainer, SettingsBlock, ButtonsBlock } from './styles'
+import { TextContainer, SettingsBlock } from './styles'
 import { useNavigation } from '@react-navigation/native'
 import { AuthenticatedNavigationProps } from '../../navigation/AuthenticatedNavigation'
 import COLORS from '../../styles/colors'
@@ -8,6 +8,8 @@ import ListButton from '../../components/UI/ListButton'
 import ListCheckboxBtn from '../../components/UI/ListButton/ListCheckboxBtn'
 import { useAuth } from '../../context/AuthContext'
 import { useMatch } from '../../context/MatchContext'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { styles, ButtonsBlock } from '../../components/UI/Container'
 
 
 const StartMatchScreen: React.FC = () => {
@@ -16,7 +18,7 @@ const StartMatchScreen: React.FC = () => {
   const { opponentName, gameMod, setGameMod, startMatch } = useMatch()
 
   return (
-    <Container>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
       <SettingsBlock>
         <TextContainer>
           <TextS color={COLORS.darkGrey}>Who&#x2019;s playing?</TextS>
@@ -62,7 +64,7 @@ const StartMatchScreen: React.FC = () => {
           onPress={() => startMatch()}
         />
       </ButtonsBlock>
-    </Container>
+    </SafeAreaView>
   )
 }
 

@@ -5,7 +5,8 @@ import { setItemInStore, getItemFromStore, deleteItemFromStore, StoreKeys } from
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk-next'
 import SocialAuthService, { FbRes } from '../services/SocialAuthService'
-import Constants from 'expo-constants'
+import * as AppleAuthentication from 'expo-apple-authentication'
+import Toast from 'react-native-toast-message'
 
 
 export type AuthContextData = {
@@ -24,6 +25,7 @@ export type AuthContextData = {
   deleteAccount(): void;
   googleSignin(): Promise<void>;
   facebookSignin(): Promise<void>;
+  appleSigin(): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData)
@@ -47,10 +49,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isSocial, setSocial] = useState<boolean>(false)
 
   GoogleSignin.configure({
-    webClientId: Constants.expoConfig?.extra?.WEB_CLIENT_ID
-      || '27486761319-aftp0a51jrjq0akdj6vp589id8jeancg.apps.googleusercontent.com',
-    iosClientId: Constants.expoConfig?.extra?.IOS_CLIENT_ID
-      || '27486761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
+    // webClientId: '27486761319-aftp0a51jrjq0akdj6vp589id8jeancg.apps.googleusercontent.com',
+    webClientId: '274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
+    iosClientId: '274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
     profileImageSize: 200,
     offlineAccess: true,
   })
@@ -58,6 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     if (isSocial) {
       await GoogleSignin.signOut()
+      // await LoginManager.logOut()
     }
 
     setUser(undefined)
@@ -104,7 +106,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       await getCurrentUser()
     } catch (err: any) {
-      if (err.message.includes('500')) {
+      if (err.message.includes('400')) {
+        return '400'
+      } else if (err.message.includes('500')) {
         return '500'
       }
     }
@@ -136,61 +140,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const googleSignin = async () => {
     try {
-      const isSignedIn = await GoogleSignin.isSignedIn()
-      await GoogleSignin.hasPlayServices()
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
 
-      if (isSignedIn) {
-        const userInfo = await GoogleSignin.getCurrentUser()
-        if (userInfo && userInfo.user) {
-          const { user, idToken } = userInfo
-          const tokens = await AuthService.googleSignin(
-            user.email,
-            user.givenName || user.email.split('@')[0],
-            user.id,
-            user.photo || undefined,
-          )
+      const userInfo = await GoogleSignin.signIn()
+      if (userInfo && userInfo.user && userInfo.idToken) {
+        const { user } = userInfo
+        const tokens = await AuthService.googleSignin(
+          user.email,
+          user.givenName || user.email.split('@')[0],
+          user.id,
+          user.photo || undefined,
+        )
 
-          if (!tokens) {
-            throw new Error('Registration error')
-          }
-
-          const { accessToken, refreshToken } = tokens.data
-
-          setTokens({ accessToken, refreshToken })
-          setSocial(true)
-
-          await setItemInStore(StoreKeys.isSocial, 'TRUE')
-          await setItemInStore(StoreKeys.accessToken, accessToken)
-          await setItemInStore(StoreKeys.refreshToken, refreshToken)
-
-          await getCurrentUser()
+        if (!tokens) {
+          throw new Error('Registration error')
         }
-      } else {
-        const userInfo = await GoogleSignin.signIn()
-        if (userInfo && userInfo.user && userInfo.idToken) {
-          const { user } = userInfo
-          const tokens = await AuthService.googleSignin(
-            user.email,
-            user.givenName || user.email.split('@')[0],
-            user.id,
-            user.photo || undefined,
-          )
 
-          if (!tokens) {
-            throw new Error('Registration error')
-          }
+        const { accessToken, refreshToken } = tokens.data
 
-          const { accessToken, refreshToken } = tokens.data
+        setTokens({ accessToken, refreshToken })
+        setSocial(true)
 
-          setTokens({ accessToken, refreshToken })
-          setSocial(true)
+        await setItemInStore(StoreKeys.isSocial, 'TRUE')
+        await setItemInStore(StoreKeys.accessToken, accessToken)
+        await setItemInStore(StoreKeys.refreshToken, refreshToken)
 
-          await setItemInStore(StoreKeys.isSocial, 'TRUE')
-          await setItemInStore(StoreKeys.accessToken, accessToken)
-          await setItemInStore(StoreKeys.refreshToken, refreshToken)
-
-          await getCurrentUser()
-        }
+        await getCurrentUser()
       }
     } catch (err) {
       await logout()
@@ -200,7 +175,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const facebookSignin = async () => {
     try {
-      // await LoginManager.logOut()
       const result = await LoginManager.logInWithPermissions(['public_profile'])
       if (result.isCancelled) {
         throw new Error('User cancelled login')
@@ -219,8 +193,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               await setItemInStore(StoreKeys.refreshToken, refreshToken)
               setTokens({ accessToken, refreshToken })
 
-              // await setItemInStore(StoreKeys.isSocial, 'TRUE')
-              // setSocial(true)
+              await setItemInStore(StoreKeys.isSocial, 'TRUE')
+              setSocial(true)
               await getCurrentUser()
             },
           )
@@ -232,6 +206,56 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (err) {
       console.log(err)
       await logout()
+    }
+  }
+
+  const appleSigin = async () => {
+    try {
+      const isAviable = await AppleAuthentication.isAvailableAsync()
+      if (!isAviable) {
+        return Toast.show({
+          type: 'tomatoToast',
+          text1: 'Your device does`t support Apple Authentication',
+          visibilityTime: 2000,
+        })
+      }
+
+      const credentials = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      })
+      console.log(JSON.stringify(credentials))
+      const tokens = await SocialAuthService.appleSignin(
+        credentials.user,
+        credentials.email || 'notrealemail@gmail.com',
+        credentials.fullName?.givenName || 'notrealname',
+      )
+
+      if (!tokens) {
+        throw new Error('Registration error')
+      }
+
+      const { accessToken, refreshToken } = tokens.data
+
+      setTokens({ accessToken, refreshToken })
+      setSocial(true)
+
+      await setItemInStore(StoreKeys.isSocial, 'TRUE')
+      await setItemInStore(StoreKeys.accessToken, accessToken)
+      await setItemInStore(StoreKeys.refreshToken, refreshToken)
+
+      await getCurrentUser()
+    } catch (e: any) {
+      if (e.code === 'ERR_REQUEST_CANCELED') {
+        return
+      }
+      return Toast.show({
+        type: 'tomatoToast',
+        text1: 'Something went wrong, please try again',
+        visibilityTime: 2000,
+      })
     }
   }
 
@@ -296,6 +320,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     deleteAccount,
     googleSignin,
     facebookSignin,
+    appleSigin,
   }
 
   return (

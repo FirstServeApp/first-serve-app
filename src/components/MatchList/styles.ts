@@ -1,7 +1,6 @@
 import styled from 'styled-components/native'
 import COLORS from '../../styles/colors'
 import { textLarge } from '../../styles/mixins'
-import { Dimensions } from 'react-native'
 
 
 const { bgGrey, darkGrey } = COLORS
@@ -117,13 +116,9 @@ export const MatchListContainer = styled.View`
 `
 
 export const NoMatchesContainer = styled.View`
-  width: 100%;
-  height: ${`${Dimensions.get('window').height - 80}px`};  /* DELETE */
   flex: 1;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 48px;
 `
 
 export const NoMatchesIllustrationWrap = styled.View`

@@ -9,7 +9,7 @@ import { useAuth } from '../../../context/AuthContext'
 WebBrowser.maybeCompleteAuthSession()
 
 const SocialSigninBtns = () => {
-  const { googleSignin, facebookSignin } = useAuth()
+  const { googleSignin, facebookSignin, appleSigin } = useAuth()
 
   return (
     <SocialSigninContainer>
@@ -17,7 +17,9 @@ const SocialSigninBtns = () => {
       <SocialBtnsContainer>
         <SocialBtn icon="google" onPress={googleSignin} />
         <SocialBtn icon="facebook" onPress={facebookSignin} />
-        <SocialBtn icon="apple" />
+        <SocialBtn
+          icon="apple"
+          onPress={appleSigin} />
       </SocialBtnsContainer>
     </SocialSigninContainer>
   )

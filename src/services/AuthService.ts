@@ -41,8 +41,20 @@ class AuthService {
     return await $api.post('/auth/forgot-password/send-otp', { email })
   }
 
-  async verifyOTP(id: string, code: string) {
-    return await $api.post('/auth/forgot-password/verify', { id, otpCode: code })
+  verifyOTP(id: string, code: string) {
+    return new Promise(async (resolve, reject) => {
+      await $api.post('/auth/forgot-password/verify', { id, otpCode: code })
+        .then(res => resolve(res))
+        .catch(err => {
+          if (err.message.includes('400')) {
+            return reject('400')
+          } else if (err.message.includes('404')) {
+            return reject('404')
+          } else if (err.message.includes('500')) {
+            return reject('500')
+          }
+        })
+    })
   }
 
   async changePassword(id: string, password: string) {

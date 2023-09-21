@@ -3,22 +3,29 @@ import { StatusBar } from 'expo-status-bar'
 import { HomeContainer, BottomContainer } from './styles'
 import HomeHeader from '../../components/HomeHeader'
 import { MatchList } from '../../components/MatchList'
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import ButtonComponent from '../../components/UI/Button'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import ProfilePopup from '../../components/ProfilePopup'
-import FiltersPopup from '../../components/FiltersPopup'
 import { AuthenticatedNavigationProps } from '../../navigation/AuthenticatedNavigation'
 import { useNavigation } from '@react-navigation/native'
 import MatchService, { GetAllSet, Match } from '../../services/matchService'
+import { PopupNames, usePopup } from '../../context/PopupContext'
+
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+})
 
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
-  const [isPopupVisible, setPopupVisible] = useState(false)
-  const [isFilterPopupVisible, setFilterPopupVisible] = useState(false)
-  const onOpen = () => setPopupVisible(true)
-  const onClose = () => setPopupVisible(false)
+  const { showPopup } = usePopup()
 
   const [data, setData] = useState<Match<GetAllSet>[]>([])
   const [isLoading, setLoading] = useState(true)
@@ -37,6 +44,8 @@ const HomeScreen: React.FC = () => {
     fetchMatches()
   }, [])
 
+  const showEmptyStyles = data.length === 0 || !data || isLoading
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchMatches()
@@ -49,15 +58,13 @@ const HomeScreen: React.FC = () => {
     <HomeContainer>
       <GestureHandlerRootView>
         <StatusBar style="dark" />
-        <ScrollView bounces={false}>
-          <HomeHeader onOpen={onOpen} />
-          <MatchList setFiltersVisible={setFilterPopupVisible} data={data} isLoading={isLoading} />
+        <ScrollView bounces={false} style={styles.flex} contentContainerStyle={showEmptyStyles && styles.empty}>
+          <HomeHeader onOpen={() => showPopup(PopupNames.Profile)} />
+          <MatchList data={data} isLoading={isLoading} />
         </ScrollView>
         <BottomContainer>
           <ButtonComponent title="New match" size="M" onPress={() => navigation.navigate('StartMatch')} />
         </BottomContainer>
-        <ProfilePopup visible={isPopupVisible} onClose={onClose} />
-        <FiltersPopup visible={isFilterPopupVisible} onClose={() => setFilterPopupVisible(false)} />
       </GestureHandlerRootView>
     </HomeContainer>
   )

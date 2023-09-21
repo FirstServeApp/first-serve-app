@@ -8,24 +8,23 @@ import {
 import MatchCard from './MatchCard'
 import { Match, GetAllSet } from '../../services/matchService'
 import { Header3 } from '../../styles/typography'
-import IconBtn from '../UI/Button/IconBtn'
 import { getMatchCount } from '../../utils/matchUtils'
 import Loader from '../UI/Loader'
 import { Illustration } from '../UI/Illustration'
 import { useFilters, DateFilterNames } from '../../context/FiltersContext'
+import { FilterIconButton } from '../UI/Button/FilterIconButton'
+import { PopupNames, usePopup } from '../../context/PopupContext'
 import PauseMatchCard from './PauseMatchCard'
 
 
 type Props = {
-  setFiltersVisible: (value: boolean) => void;
   data: Match<GetAllSet>[];
   isLoading: boolean;
 }
 
-export const MatchList: React.FC<Props> = ({ setFiltersVisible, data, isLoading = true }) => {
-  const { dateFilter, playersFilter, otherPeriodStartDate, otherPeriodEndDate } = useFilters()
-
-  const showLoader = isLoading === undefined ? true : isLoading
+export const MatchList: React.FC<Props> = ({ data, isLoading = true }) => {
+  const { dateFilter, playersFilter, otherPeriodStartDate, otherPeriodEndDate, isFiltersApplied } = useFilters()
+  const { showPopup } = usePopup()
 
   const filteredData = data.filter(match => {
     const matchDate = new Date(match.createdAt)
@@ -64,16 +63,14 @@ export const MatchList: React.FC<Props> = ({ setFiltersVisible, data, isLoading 
     return playersFilter.includes(match.opponentName)
   })
 
-  if (showLoader) {
+  if (isLoading || data === undefined) {
     return <NoMatchesContainer><Loader /></NoMatchesContainer>
-  }
-
-  if (data?.length > 0) {
+  } else if (data?.length > 0) {
     return (
       <>
         <FilterBlock>
           <Header3>{getMatchCount(filteredData.length)}</Header3>
-          <IconBtn icon="filters" type="light" onPress={() => setFiltersVisible(true)} />
+          <FilterIconButton isFilterApplied={isFiltersApplied} onPress={() => showPopup(PopupNames.Filters)} />
         </FilterBlock>
         <MatchListContainer>
           <PauseMatchCard />
@@ -90,7 +87,7 @@ export const MatchList: React.FC<Props> = ({ setFiltersVisible, data, isLoading 
           <Illustration name="no-matches" />
         </NoMatchesIllustrationWrap>
         <NoMatchesSubtitle>
-          Here will be the history of your matches, to start a new match click the button below
+          {'Here will be the history\nof your matches'}
         </NoMatchesSubtitle>
       </NoMatchesContainer>
     )

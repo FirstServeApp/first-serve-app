@@ -30,7 +30,7 @@ const getIconBtnBg = (type: string) => {
 
 export const ButtonContainer = styled.TouchableOpacity<BtnProps>`
   width: 100%;
-  padding: 14px;
+  padding: ${({ icon }) => icon ? '12px' : '14px'};
   background: ${({ type, disabled }) => getButtonBackground(type, disabled)};
   padding: ${({ size }) => size === 'S' ? '14px' : '20px'};
   border: none;

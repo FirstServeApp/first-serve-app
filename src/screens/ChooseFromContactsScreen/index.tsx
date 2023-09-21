@@ -9,6 +9,7 @@ import { groupContactsByLetter, GroupedContacts } from '../../utils/contactsUtil
 import ContactList from '../../components/ContactList'
 import { useMatch } from '../../context/MatchContext'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 type Props = NativeStackScreenProps<AuthenticatedStackParams, 'ChooseFromContacts'>
@@ -50,19 +51,21 @@ const ChooseFromContactsScreen: React.FC<Props> = React.memo(({ route }) => {
   }, [])
 
   return (
-    <>
-      <ChooseFromContactsHeader>
-        <SearchBar onChange={filterBySearch} />
-      </ChooseFromContactsHeader>
-      <Container>
-        <ContactList data={filteredList} player={route.params.player} />
-        {opponentName && (
-          <ButtonContainer>
-            <ButtonComponent title="Select contact" size="M" onPress={() => navigation.navigate('PlayerDetails')} />
-          </ButtonContainer>
-        )}
-      </Container>
-    </>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <>
+        <ChooseFromContactsHeader>
+          <SearchBar onChange={filterBySearch} />
+        </ChooseFromContactsHeader>
+        <Container>
+          <ContactList data={filteredList} player={route.params.player} />
+          {opponentName && (
+            <ButtonContainer>
+              <ButtonComponent title="Select contact" size="M" onPress={() => navigation.navigate('PlayerDetails')} />
+            </ButtonContainer>
+          )}
+        </Container>
+      </>
+    </TouchableWithoutFeedback>
   )
 })
 

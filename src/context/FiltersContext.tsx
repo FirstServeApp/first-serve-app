@@ -18,6 +18,7 @@ export type FiltersContextData = {
   setPlayersFilter(value: string[]): void;
   setOtherPeriodStartDate(value: Date | undefined): void;
   setOtherPeriodEndDate(value: Date | undefined): void;
+  isFiltersApplied: boolean;
 }
 
 const FiltersContext = createContext<FiltersContextData>({} as FiltersContextData)
@@ -37,6 +38,7 @@ export const FiltersProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [otherPeriodStartDate, setOtherPeriodStartDate] = useState<Date | undefined>()
   const [otherPeriodEndDate, setOtherPeriodEndDate] = useState<Date | undefined>()
   const [playersFilter, setPlayersFilter] = useState<string[]>([])
+  const isFiltersApplied = playersFilter.length > 0 || dateFilter !== DateFilterNames.All
 
 
   const filtersContextValue: FiltersContextData = {
@@ -48,6 +50,7 @@ export const FiltersProvider: React.FC<{ children: ReactNode }> = ({ children })
     setPlayersFilter,
     setOtherPeriodStartDate,
     setOtherPeriodEndDate,
+    isFiltersApplied,
   }
 
   return (

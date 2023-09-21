@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ButtonComponent from '../../components/UI/Button'
 import { TextS } from '../../styles/typography'
-import { Container, TextContainer, SettingsBlock, ButtonsBlock } from './styles'
+import { TextContainer, SettingsBlock } from './styles'
 import { useNavigation } from '@react-navigation/native'
 import { AuthenticatedNavigationProps, AuthenticatedStackParams } from '../../navigation/AuthenticatedNavigation'
 import COLORS from '../../styles/colors'
@@ -10,16 +10,19 @@ import OneFieldForm from '../../components/OneFieldForm'
 import { FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { OpponentNameFormData, opponentNameSchema } from '../../validations/matchValidations'
-import { useMatch } from '../../context/MatchContext'
 import matchService from '../../services/matchService'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { usePopup } from '../../context/PopupContext'
+import { TouchableWithoutFeedback, Keyboard } from 'react-native'
 
 
 type Props = NativeStackScreenProps<AuthenticatedStackParams, 'EditMatch'>
 
 const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
-  const { opponentName, setOpponentName } = useMatch()
+  const { setMatchId } = usePopup()
   const [isLoading, setLoading] = useState(false)
   const methods = useForm<OpponentNameFormData>({
     resolver: yupResolver(opponentNameSchema),
@@ -40,7 +43,6 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
     setLoading(true)
     methods.handleSubmit(async data => {
       if (data.opponentName) {
-        setOpponentName(data.opponentName)
         await matchService.changeOpponentName(data.opponentName, route.params.id)
       }
 
@@ -49,35 +51,35 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
   }
 
   useEffect(() => {
-    if (opponentName) {
-      methods.setValue('opponentName', opponentName)
-    }
-  }, [opponentName, methods])
+    setMatchId(route.params.id)
+  }, [])
 
   return (
-    <Container>
-      <SettingsBlock>
-        <TextContainer>
-          <TextS color={COLORS.darkGrey}>Opponent name</TextS>
-        </TextContainer>
-        <FormProvider {...methods}>
-          <OneFieldForm
-            name="opponentName"
-            placeholder="Opponent"
-            maxLength={16}
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <SettingsBlock>
+          <TextContainer>
+            <TextS color={COLORS.darkGrey}>Opponent name</TextS>
+          </TextContainer>
+          <FormProvider {...methods}>
+            <OneFieldForm
+              name="opponentName"
+              placeholder="Opponent"
+              maxLength={16}
+            />
+          </FormProvider>
+        </SettingsBlock>
+        <ButtonsBlock>
+          <ButtonComponent title="Save" onPress={onSave} loading={isLoading} />
+          <ButtonComponent
+            title="Select from contacts"
+            type="secondary"
+            icon="group"
+            onPress={onChooseFromContacts}
           />
-        </FormProvider>
-      </SettingsBlock>
-      <ButtonsBlock>
-        <ButtonComponent title="Save" onPress={onSave} loading={isLoading} />
-        <ButtonComponent
-          title="Select from contacts"
-          type="secondary"
-          icon="group"
-          onPress={onChooseFromContacts}
-        />
-      </ButtonsBlock>
-    </Container>
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 })
 

@@ -16,8 +16,29 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.firstserve.app"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.firstserve.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml",
+              // [
+              //   "fb841784150950912",
+              //   {
+              //     "appID": "841784150950912",
+              //     "clientToken": "b115e68a3577365f90d7d4311d31998c",
+              //     "displayName": "First Serve",
+              //     "scheme": "fb841784150950912",
+              //     "autoLogAppEventsEnabled": false,
+              //     "isAutoInitEnabled": true
+              //   }
+              // ]
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +48,8 @@
       "package": "com.firstserve.app",
       "config": {
         "googleSignIn": {
-          "expoClientId": "274856761319-k9uf1a1utsa2inslqrkm75he256o04uk.apps.googleusercontent.com"
+          "expoClientId": "274856761319-k9uf1a1utsa2inslqrkm75he256o04uk.apps.googleusercontent.com",
+          "iosClientId": "2274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com"
         }
       }
     },
@@ -59,12 +81,13 @@
         {
           "appID": "841784150950912",
           "clientToken": "b115e68a3577365f90d7d4311d31998c",
-          "displayName": "First Sevre",
+          "displayName": "First Serve",
           "scheme": "fb841784150950912",
           "autoLogAppEventsEnabled": true,
           "isAutoInitEnabled": true
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ]
   }
 }

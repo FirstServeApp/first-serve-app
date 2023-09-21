@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native'
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { AuthenticatedNavigationProps } from '../navigation/AuthenticatedNavigation'
-import { CreateMatchSet, Game, GameHistory } from '../services/matchService'
+import matchService, { CreateMatchSet, Game, GameHistory } from '../services/matchService'
 import { useStopwatch } from 'react-timer-hook'
+import Toast from 'react-native-toast-message'
 
 
 export enum GameStates {
@@ -66,6 +67,8 @@ export const useMatch = (): MatchContextData => {
   return context
 }
 
+const matchChangesHistory: any[] = []
+
 export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const [opponentName, setOpponentName] = useState('Opponent')
@@ -89,39 +92,47 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [matchHistory, setMatchHistory] = useState<any[]>([])
   const [showMatchPopup, setShowMatchPopup] = useState(false)
   const [isMatchPaused, setMatchPaused] = useState(false)
+  const [testMatchFinish, setMatchFinish] = useState(false)
 
-  const addToMatchHistory = (data: any) => {
-    setMatchHistory(prev => {
-      const newData = [...prev]
-      newData.push(data)
-      return newData
-    })
+  const addToMatchHistory = () => {
+    const data = {
+      myGameScore,
+      opponentGameScore,
+      currentState,
+      currentServer,
+      drawingWinner,
+      currentSet,
+      myScores,
+      opponentScores,
+      isTiebreak,
+      drawingServe,
+      currentGame,
+      gameStartTime,
+      gameHistory,
+      games,
+      gameSets,
+      matchHistory,
+    }
+    matchChangesHistory.push(data)
   }
 
   const undo = () => {
-    if (matchHistory.length > 0) {
-      const index = matchHistory.length >= 2 ? matchHistory.length - 2 : 0
-      const info = matchHistory[index]
+    if (matchChangesHistory.length > 0) {
+      const index = matchChangesHistory.length - 1 || 0
+      const info = matchChangesHistory[index]
       setMyGameScore(info.myGameScore)
       setOpponentGameScore(info.opponentGameScore)
-      setCurrentState(info.currentState)
-      setCurrentServer(info.currentServer)
-      setDrawingWinner(info.drawingWinner)
       setCurrentSet(info.currentSet)
+      setCurrentState(index === 0 ? GameStates.firstServe : GameStates.drawing)
       setMyScores(info.myScores)
       setOpponentScores(info.opponentScores)
-      setTiebreak(info.isTiebreak)
-      setDrawingServe(info.drawingServe)
       setCurrentGame(info.currentGame)
-      setGameStartTime(info.gameStartTime)
+      setCurrentServer(info.currentServer)
+      setDrawingWinner(info.drawingWinner)
       setGameHistory(info.gameHistory)
       setGames(info.games)
       setGameSets(info.gameSets)
-      setMatchHistory(prev => {
-        const newData = [...prev]
-        newData.pop()
-        return newData
-      })
+      matchChangesHistory.pop()
     }
   }
 
@@ -158,15 +169,37 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     navigation.navigate('Home')
   }
 
+  const saveMatch = async () => {
+    try {
+      const isOpponentWins = gameMod === 3
+        ? opponentScores.filter((num, index) => num > myScores[index]).length >= 2
+        : opponentScores[0] - myScores[0] >= 2
+      await matchService
+        .create(isOpponentWins, opponentName, gameSets, totalSeconds)
+        .then(data => navigation.navigate('Winner', { data: data.data }))
+        .then(() => clearState())
+    } catch (err) {
+      Toast.show({
+        type: 'tomatoToast',
+        text1: 'Something went wrong',
+        visibilityTime: 2000,
+      })
+      // return navigation.navigate('Home')
+    }
+  }
+
   const finishMatch = (isUserRetired: boolean) => {
-    const isOpponentWins = gameMod === 3
-      ? opponentScores.filter((num, index) => num > myScores[index]).length >= 2
-      : opponentScores[0] - myScores[0] >= 2
+    setGameSets(prev => {
+      const newData = [...prev, {
+        index: currentSet,
+        myScore: myScores[currentSet],
+        opponentScore: opponentScores[currentSet],
+        games,
+      }]
 
-    navigation.navigate('Winner', { isOpponentWins: isOpponentWins || isUserRetired,
-      opponentName, gameSets, totalSeconds })
-
-    return clearState()
+      return newData
+    })
+    setMatchFinish(true)
   }
 
   const pauseMatch = () => {
@@ -181,7 +214,7 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setMatchPaused(false)
   }
 
-  const writeGameHistory = useCallback((type: string, myScore: number, opponentScore: number) => {
+  const writeGameHistory = (type: string, myScore: number, opponentScore: number) => {
     setGameHistory(prev => [
       ...prev,
       {
@@ -192,9 +225,9 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         server: drawingWinner,
       },
     ])
-  }, [drawingWinner, drawingServe])
+  }
 
-  const writeGame = useCallback((gameDuration: number, myScore: number, opponentScore: number) => {
+  const writeGame = (gameDuration: number, myScore: number, opponentScore: number) => {
     return new Promise((resolve, reject) => {
       setGames(prev => [
         ...prev,
@@ -210,9 +243,9 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
       resolve({})
     })
-  }, [currentGame, currentServer, gameHistory])
+  }
 
-  const increaseOpponentGameScore = useCallback((type: string) => {
+  const increaseOpponentGameScore = (type: string) => {
     const opponentIncreaseCount = opponentGameScore === 30 ? 10 : 15
     if (isTiebreak) {
       return setOpponentScores(prev => {
@@ -232,9 +265,9 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       writeGameHistory(type, myGameScore, prev + opponentIncreaseCount)
       return prev + opponentIncreaseCount
     })
-  }, [isTiebreak, myGameScore])
+  }
 
-  const increaseMyGameScore = useCallback((type: string) => {
+  const increaseMyGameScore = (type: string) => {
     const myIncreaseCount = myGameScore === 30 ? 10 : 15
 
     if (isTiebreak) {
@@ -252,20 +285,21 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         return 55
       }
 
-      writeGameHistory(type, myGameScore, prev + myIncreaseCount)
+      writeGameHistory(type, prev + myIncreaseCount, opponentGameScore)
       return prev + myIncreaseCount
     })
-  }, [isTiebreak, opponentGameScore])
+  }
 
-  const setGameScore = useCallback((winner: Player, type: string) => {
+  const setGameScore = (winner: Player, type: string) => {
     if (winner === Player.opponent) {
       increaseOpponentGameScore(type)
     } else if (winner === Player.me) {
       increaseMyGameScore(type)
     }
 
+    addToMatchHistory()
     return setCurrentState(GameStates.drawing)
-  }, [])
+  }
 
   useEffect(() => {
     const gameDuration = Math.floor((+(new Date()) - +gameStartTime) / 1000)
@@ -315,7 +349,6 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   useEffect(() => {
     const gameSetScoreDiff = Math.abs(myScores[currentSet] - opponentScores[currentSet]) >= 2
     const oneGameSetMoreThan6 = myScores[currentSet] >= 6 || opponentScores[currentSet] >= 6
-    const isSetFinished = oneGameSetMoreThan6 && gameSetScoreDiff
     const isOpponentWins = gameMod === 3
       ? opponentScores.filter((num, index) => num > myScores[index]).length >= 2
       : opponentScores[0] - myScores[0] >= 2
@@ -323,6 +356,7 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       ? myScores.filter((num, index) => num > opponentScores[index]).length >= 2
       : myScores[0] - opponentScores[0] >= 2
     const isMatchFinished = (isUserWins || isOpponentWins) && oneGameSetMoreThan6
+    const isSetFinished = oneGameSetMoreThan6 && gameSetScoreDiff
 
     if (isSetFinished) {
       setGameSets(prev => {
@@ -337,42 +371,21 @@ export const MatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       })
 
       setCurrentGame(0)
-      setCurrentSet(prev => prev + 1)
       setMyGameScore(0)
       setOpponentGameScore(0)
+      setCurrentSet(prev => prev + 1)
 
       if (isMatchFinished) {
-        navigation.navigate('Winner', { isOpponentWins, opponentName, gameSets, totalSeconds })
-        return clearState()
+        setMatchFinish(true)
       }
     }
-  }, [myScores, opponentScores, currentSet])
+  }, [myScores, opponentScores, currentSet, gameSets])
 
   useEffect(() => {
-    addToMatchHistory({
-      myGameScore,
-      opponentGameScore,
-      currentState,
-      currentServer,
-      drawingWinner,
-      currentSet,
-      myScores,
-      opponentScores,
-      isTiebreak,
-      drawingServe,
-      currentGame,
-      gameStartTime,
-      gameHistory,
-      games,
-      gameSets,
-    })
-  }, [myGameScore,
-    opponentGameScore,
-    myScores,
-    opponentScores,
-    isTiebreak,
-    currentState,
-    currentServer])
+    if (testMatchFinish) {
+      saveMatch()
+    }
+  }, [testMatchFinish])
 
   const matchContextValue: MatchContextData = {
     opponentName,

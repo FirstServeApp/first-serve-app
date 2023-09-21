@@ -43,9 +43,9 @@ export const LegendBlock = styled.View`
   justify-content: space-between;
 `
 
-export const LegendText = styled.Text<{ alignCenter?: boolean, alignRight?: boolean }>`
+export const LegendText = styled.Text<{ alignCenter?: boolean, alignRight?: boolean, main?: boolean }>`
   ${textSmall}
-  width: 33%;
+  width: ${({ main }) => main ? '46%' : '27%'};
   text-align: ${({ alignCenter, alignRight }) => getTextAlign(alignCenter, alignRight)};
 `
 

@@ -92,10 +92,8 @@ export type MatchDetails = {
   secondServes: StatItem;
   firstServePointsWon: StatItem;
   secondServePointsWon: StatItem;
-  breakPointsSaved: StatItem;
   breakPointsWon: StatItem;
-  serviceGames: StatItem;
-  returnGames: StatItem;
+  aggressiveMargin: StatItem;
 }
 
 type GetMatchDetails = {
@@ -126,6 +124,10 @@ class MatchService {
 
   async changeOpponentName(opponentName: string, id: string) {
     return await $api.patch<AxiosRequestConfig, CreateMatchRes>(`/match/change/${id}`, { opponentName })
+  }
+
+  async deleteMatch(id: string) {
+    return await $api.delete(`/match/${id}`)
   }
 }
 

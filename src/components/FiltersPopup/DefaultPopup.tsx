@@ -1,4 +1,4 @@
-import BottomSheetPopup from '../UI/BottomSheet'
+import BottomSheetPopup2 from '../UI/BottomSheet'
 import { FiltersPopupContainer, HeaderWrap } from './styles'
 import { Header1 } from '../../styles/typography'
 import ListButton from '../UI/ListButton'
@@ -9,11 +9,11 @@ import { AuthenticatedNavigationProps } from '../../navigation/AuthenticatedNavi
 
 type Props = {
   visible: boolean;
-  onClose: () => void;
-  setShowDateFilter: (value: boolean) => void;
+  onClose(): void;
+  onOpen(): void;
 }
 
-const DefaultPopup: React.FC<Props> = ({ visible, onClose, setShowDateFilter }) => {
+const DefaultPopup: React.FC<Props> = ({ visible, onClose, onOpen }) => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const { dateFilter, playersFilter } = useFilters()
 
@@ -26,7 +26,7 @@ const DefaultPopup: React.FC<Props> = ({ visible, onClose, setShowDateFilter }) 
   }
 
   return (
-    <BottomSheetPopup
+    <BottomSheetPopup2
       visible={visible}
       onClose={onClose}
       snapPoints={['30%']}
@@ -48,13 +48,10 @@ const DefaultPopup: React.FC<Props> = ({ visible, onClose, setShowDateFilter }) 
           title="Date"
           leftIcon="calendar"
           rightText={dateFilter}
-          onPress={() => {
-            setShowDateFilter(true)
-            onClose()
-          }}
+          onPress={onOpen}
         />
       </FiltersPopupContainer>
-    </BottomSheetPopup>
+    </BottomSheetPopup2>
   )
 }
 

@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import Toast from 'react-native-toast-message'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 const LoginScreen: React.FC = () => {
@@ -47,29 +48,31 @@ const LoginScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
-      <Header2>Log in</Header2>
-      <Subtitle>
-        <TextS>Don't have an account yet?&nbsp;</TextS>
-        <Link onPress={() => navigation.navigate('Register')}>Create account</Link>
-      </Subtitle>
-      <FormProvider {...methods}>
-        <LoginForm loading={isLoading} />
-      </FormProvider>
-      <SocialSigninBtns />
-      <ButtonsBlock>
-        <ButtonComponent
-          title="Login"
-          loading={isLoading}
-          disabled={!methods.formState.isDirty || !methods.formState.isValid}
-          onPress={methods.handleSubmit(onLogin)}
-        />
-        <LinkWrap>
-          <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Forgot password</Link>
-        </LinkWrap>
-      </ButtonsBlock>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="dark" />
+        <Header2>Log in</Header2>
+        <Subtitle>
+          <TextS>Don't have an account yet?&nbsp;</TextS>
+          <Link onPress={() => navigation.navigate('Register')}>Create account</Link>
+        </Subtitle>
+        <FormProvider {...methods}>
+          <LoginForm loading={isLoading} />
+        </FormProvider>
+        <SocialSigninBtns />
+        <ButtonsBlock>
+          <ButtonComponent
+            title="Login"
+            loading={isLoading}
+            disabled={!methods.formState.isDirty || !methods.formState.isValid}
+            onPress={methods.handleSubmit(onLogin)}
+          />
+          <LinkWrap>
+            <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Forgot password</Link>
+          </LinkWrap>
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

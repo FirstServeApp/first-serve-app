@@ -1,8 +1,7 @@
-/* eslint-disable react-native/no-inline-styles */
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2, TextS } from '../../../styles/typography'
-import { Container } from '../../../components/UI/Container'
-import { ButtonsBlock, LinkWrap, Subtitle } from '../styles'
+import { styles, ButtonsBlock } from '../../../components/UI/Container'
+import { LinkWrap, Subtitle } from '../styles'
 import Link from '../../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
 import {
@@ -19,6 +18,8 @@ import { formatTime } from '../../../utils/timeUtils'
 import COLORS from '../../../styles/colors'
 import AuthService from '../../../services/AuthService'
 import { useTimer } from 'react-timer-hook'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 type Props = NativeStackScreenProps<UnauthenticatedStackParams, 'PasswordRecoveryStep2'>
@@ -39,13 +40,17 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
 
     await AuthService
       .verifyOTP(route.params.id, data.otp)
+      .then(() => navigation.navigate('PasswordRecoveryStep3', { id: route.params.id }))
       .catch(err => {
-        if (err === '400' || err === '404') {
+        console.log(err)
+        if (err === '400') {
           methods.setError('otp', { message: 'Invalid OTP code', type: 'onBlur' })
+          return setLoading(false)
+        } else if (err === '404') {
+          methods.setError('otp', { message: 'OTP code has expired', type: 'onBlur' })
           return setLoading(false)
         }
       })
-      .then(() => navigation.navigate('PasswordRecoveryStep3', { id: route.params.id }))
       .finally(() => setLoading(false))
   }
 
@@ -58,41 +63,43 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
   }, [])
 
   return (
-    <Container style={{ paddingTop: 0 }}>
-      <Header2>Enter code</Header2>
-      <Subtitle>
-        <TextS>
-          A confirmation code was sent to {route.params.email}.
-          Don&#x2019;t forget to check your spam folder
-        </TextS>
-      </Subtitle>
-      <FormProvider {...methods}>
-        <OneFieldForm
-          name="otp"
-          placeholder="Code"
-          autoCapitalize="none"
-          keyboardType="number-pad"
-          editable={!isLoading}
-          maxLength={4}
-          autoFocus
-        />
-      </FormProvider>
-      <ButtonsBlock>
-        <ButtonComponent
-          title="Complete"
-          loading={isLoading}
-          disabled={!methods.formState.isDirty || !methods.formState.isValid}
-          onPress={methods.handleSubmit(onSubmit)}
-        />
-        {totalSeconds > 0 ? (
-          <TextS color={COLORS.darkGrey}>Send code again in {formatTime(totalSeconds)}</TextS>
-        ) : (
-          <LinkWrap>
-            <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Send code again</Link>
-          </LinkWrap>
-        )}
-      </ButtonsBlock>
-    </Container>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <Header2>Enter code</Header2>
+        <Subtitle>
+          <TextS>
+            A confirmation code was sent to {route.params.email}.
+            Don&#x2019;t forget to check your spam folder
+          </TextS>
+        </Subtitle>
+        <FormProvider {...methods}>
+          <OneFieldForm
+            name="otp"
+            placeholder="Code"
+            autoCapitalize="none"
+            keyboardType="number-pad"
+            editable={!isLoading}
+            maxLength={4}
+            autoFocus
+          />
+        </FormProvider>
+        <ButtonsBlock>
+          <ButtonComponent
+            title="Complete"
+            loading={isLoading}
+            disabled={!methods.formState.isDirty || !methods.formState.isValid}
+            onPress={methods.handleSubmit(onSubmit)}
+          />
+          {totalSeconds > 0 ? (
+            <TextS color={COLORS.darkGrey}>Send code again in {formatTime(totalSeconds)}</TextS>
+          ) : (
+            <LinkWrap>
+              <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Send code again</Link>
+            </LinkWrap>
+          )}
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

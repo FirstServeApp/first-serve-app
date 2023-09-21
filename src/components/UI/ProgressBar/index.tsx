@@ -4,13 +4,13 @@ import { ProgressBarContainer, ProgressBarFill } from './styles'
 type Props = {
   align: 'flex-start' | 'flex-end';
   type: 'primary' | 'secondary';
-  percent: number;
+  percent: number | string;
 }
 
 const ProgressBar: React.FC<Props> = ({ align, type, percent }) => {
   return (
     <ProgressBarContainer align={align}>
-      <ProgressBarFill percent={percent} type={type} />
+      <ProgressBarFill percent={+percent} type={type} />
     </ProgressBarContainer>
   )
 }

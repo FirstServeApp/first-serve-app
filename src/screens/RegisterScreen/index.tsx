@@ -15,6 +15,7 @@ import { RegistrationFormData, registrationSchema } from '../../validations/auth
 import { useAuth } from '../../context/AuthContext'
 import Toast from 'react-native-toast-message'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { TouchableWithoutFeedback, Keyboard } from 'react-native'
 
 
 const RegisterScreen: React.FC = () => {
@@ -38,48 +39,51 @@ const RegisterScreen: React.FC = () => {
             text1: 'Something went wrong, please try again',
             visibilityTime: 2000,
           })
+
+          methods.reset()
+          return setLoading(false)
+        } else if (err === '400') {
+          methods.setError('email', { message: 'User with this email already exists', type: 'onBlur' })
+          return setLoading(false)
         }
-      })
-      .finally(() => {
-        setLoading(false)
-        methods.reset()
-        setConfirmed(false)
       })
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header2>Create account</Header2>
-      <Subtitle>
-        <TextS>Already have an account?&nbsp;</TextS>
-        <Link onPress={() => navigation.navigate('Login')}>Sign in</Link>
-      </Subtitle>
-      <FormProvider {...methods}>
-        <RegistrationForm loading={isLoading} />
-      </FormProvider>
-      <ConsentFormContainer>
-        <ConsentFormText>
-          <TextS>I accept the&nbsp;</TextS>
-          <Link onPress={() => navigation.navigate('Login')}>privacy policy&nbsp;</Link>
-          <TextS>and&nbsp;</TextS>
-          <Link onPress={() => navigation.navigate('Login')}>terms of use</Link>
-        </ConsentFormText>
-        <Checkbox
-          isChecked={isConfirmed}
-          disabled={isLoading}
-          onPress={() => setConfirmed(prevState => !prevState)}
-        />
-      </ConsentFormContainer>
-      <SocialSigninBtns />
-      <ButtonsBlock>
-        <ButtonComponent
-          title="Create account"
-          loading={isLoading}
-          disabled={!methods.formState.isDirty || !methods.formState.isValid || !isConfirmed}
-          onPress={methods.handleSubmit(onSignup)}
-        />
-      </ButtonsBlock>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.container}>
+        <Header2>Create account</Header2>
+        <Subtitle>
+          <TextS>Already have an account?&nbsp;</TextS>
+          <Link onPress={() => navigation.navigate('Login')}>Sign in</Link>
+        </Subtitle>
+        <FormProvider {...methods}>
+          <RegistrationForm loading={isLoading} />
+        </FormProvider>
+        <ConsentFormContainer>
+          <ConsentFormText>
+            <TextS>I accept the&nbsp;</TextS>
+            <Link onPress={() => navigation.navigate('Login')}>privacy policy&nbsp;</Link>
+            <TextS>and&nbsp;</TextS>
+            <Link onPress={() => navigation.navigate('Login')}>terms of use</Link>
+          </ConsentFormText>
+          <Checkbox
+            isChecked={isConfirmed}
+            disabled={isLoading}
+            onPress={() => setConfirmed(prevState => !prevState)}
+          />
+        </ConsentFormContainer>
+        <SocialSigninBtns />
+        <ButtonsBlock>
+          <ButtonComponent
+            title="Create account"
+            loading={isLoading}
+            disabled={!methods.formState.isDirty || !methods.formState.isValid || !isConfirmed}
+            onPress={methods.handleSubmit(onSignup)}
+          />
+        </ButtonsBlock>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

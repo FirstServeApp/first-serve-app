@@ -74,15 +74,15 @@ const MatchStats: React.FC<Props> = ({ data }) => {
                 <LegendBlock>
                   <LegendText>
                     {stats.myText}
-                    {stats.myPercent && <TextS color={COLORS.darkGrey}> ({stats.myPercent}%)</TextS>}
+                    {!!stats.myPercent && <TextS color={COLORS.darkGrey}> ({stats.myPercent}%)</TextS>}
                   </LegendText>
-                  <LegendText alignCenter>{stats.title}</LegendText>
+                  <LegendText alignCenter main>{stats.title}</LegendText>
                   <LegendText alignRight>
                     {stats.opponentText}
-                    {stats.opponentPercent && <TextS color={COLORS.darkGrey}> ({stats.opponentPercent}%)</TextS>}
+                    {!!stats.opponentPercent && <TextS color={COLORS.darkGrey}> ({stats.opponentPercent}%)</TextS>}
                   </LegendText>
                 </LegendBlock>
-                <ProgressBlockWrap>
+                {stats.title !== 'Aggressive margin' && (<ProgressBlockWrap>
                   <ProgressBlock>
                     <ProgressBar
                       align="flex-end"
@@ -97,7 +97,7 @@ const MatchStats: React.FC<Props> = ({ data }) => {
                       percent={stats.opponentPercent || 0}
                     />
                   </ProgressBlock>
-                </ProgressBlockWrap>
+                </ProgressBlockWrap>)}
               </MatchStatsCardRow>
             )
           })}

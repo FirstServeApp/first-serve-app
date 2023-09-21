@@ -9,6 +9,7 @@ import IconBtn from '../UI/Button/IconBtn'
 import ConfirmPopup from './ConfirmPopup'
 import ButtonComponent from '../UI/Button'
 import { useAuth } from '../../context/AuthContext'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
 const MatchPopup: React.FC = () => {
@@ -17,6 +18,7 @@ const MatchPopup: React.FC = () => {
   const [showPausePopup, setShowPausePopup] = useState(false)
   const [showCancelPopup, setShowCancelPopup] = useState(false)
   const [showFinishPopup, setShowFinishPopup] = useState(false)
+  const { bottom } = useSafeAreaInsets()
 
   const closeAll = () => {
     setShowMatchPopup(false)
@@ -35,9 +37,9 @@ const MatchPopup: React.FC = () => {
       <BottomSheetPopup
         visible={showMatchPopup}
         onClose={() => setShowMatchPopup(false)}
-        snapPoints={['40%']}
+        snapPoints={['30%']}
       >
-        <MatchPopupContainer>
+        <MatchPopupContainer bottomInset={bottom}>
           <HeaderWrap>
             <Header3>Details</Header3>
             <IconBtn icon="cancel" type="light" onPress={() => setShowMatchPopup(false)} />
@@ -55,12 +57,12 @@ const MatchPopup: React.FC = () => {
       <ConfirmPopup
         title="Pause match"
         subtitle="You can return to the game any time"
-        height="30%"
+        height="32%"
         visible={showPausePopup}
         onClose={() => setShowPausePopup(false)}
       >
-        <ButtonComponent title="Cancel" style={{ width: '48%' }} type="secondary" onPress={closeAll} />
-        <ButtonComponent title="Pause" style={{ width: '48%' }} onPress={() => pauseMatch} />
+        <ButtonComponent title="Cancel" type="secondary" onPress={closeAll} />
+        <ButtonComponent title="Pause" onPress={pauseMatch} />
       </ConfirmPopup>
       <ConfirmPopup
         title={'Are you sure you want \nto cancel the match without saving?'}
@@ -68,8 +70,8 @@ const MatchPopup: React.FC = () => {
         visible={showCancelPopup}
         onClose={() => setShowCancelPopup(false)}
       >
-        <ButtonComponent title="Cancel" style={{ width: '48%' }} type="secondary" onPress={closeAll} />
-        <ButtonComponent title="Yes" style={{ width: '48%' }} onPress={cancelMatch} />
+        <ButtonComponent title="Cancel" type="secondary" onPress={closeAll} />
+        <ButtonComponent title="Yes" onPress={cancelMatch} />
       </ConfirmPopup>
       <ConfirmPopup
         title="Who retired?"
@@ -77,8 +79,8 @@ const MatchPopup: React.FC = () => {
         visible={showFinishPopup}
         onClose={() => setShowFinishPopup(false)}
       >
-        <ButtonComponent title="Opponent" style={{ width: '48%' }} type="opponent" onPress={() => finishMatch(false)} />
-        <ButtonComponent title={user?.name || 'Me'} style={{ width: '48%' }} onPress={() => finishMatch(true)} />
+        <ButtonComponent title="Opponent" type="opponent" onPress={() => finishMatch(false)} />
+        <ButtonComponent title={user?.name || 'Me'} onPress={() => finishMatch(true)} />
       </ConfirmPopup>
     </>
   )

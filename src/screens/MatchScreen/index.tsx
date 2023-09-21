@@ -7,28 +7,16 @@ import { Container, CardBlockContainer, styles, TopBlockWrap, ButtonContainer } 
 import MatchHeader from '../../components/MatchHeader'
 import { useFocusEffect } from '@react-navigation/native'
 import { useMatch } from '../../context/MatchContext'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { AuthenticatedStackParams } from '../../navigation/AuthenticatedNavigation'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
-type Props = NativeStackScreenProps<AuthenticatedStackParams, 'Match'>
-
-const MatchScreen: React.FC<Props> = ({ navigation }) => {
-  const { isMatchPaused, pauseMatch, continueMatch } = useMatch()
+const MatchScreen: React.FC = () => {
+  const { isMatchPaused, continueMatch } = useMatch()
   const { bottom } = useSafeAreaInsets()
 
   useFocusEffect(useCallback(() => {
     if (isMatchPaused) {
       continueMatch()
-    }
-
-    const handleBlur = () => pauseMatch()
-
-    navigation.addListener('blur', handleBlur)
-
-    return () => {
-      navigation.removeListener('blur', handleBlur)
     }
   }, []))
 
