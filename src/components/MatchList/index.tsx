@@ -14,7 +14,8 @@ import { Illustration } from '../UI/Illustration'
 import { useFilters, DateFilterNames } from '../../context/FiltersContext'
 import { FilterIconButton } from '../UI/Button/FilterIconButton'
 import { PopupNames, usePopup } from '../../context/PopupContext'
-import PauseMatchCard from './PauseMatchCard'
+import PauseMatchCard from './PausedMatchCard'
+import { memo } from 'react'
 
 
 type Props = {
@@ -22,7 +23,7 @@ type Props = {
   isLoading: boolean;
 }
 
-export const MatchList: React.FC<Props> = ({ data, isLoading = true }) => {
+export const MatchList: React.FC<Props> = memo(({ data, isLoading = true }) => {
   const { dateFilter, playersFilter, otherPeriodStartDate, otherPeriodEndDate, isFiltersApplied } = useFilters()
   const { showPopup } = usePopup()
 
@@ -63,9 +64,18 @@ export const MatchList: React.FC<Props> = ({ data, isLoading = true }) => {
     return playersFilter.includes(match.opponentName)
   })
 
-  if (isLoading || data === undefined) {
-    return <NoMatchesContainer><Loader /></NoMatchesContainer>
-  } else if (data?.length > 0) {
+  if (!isLoading && (data === undefined || data.length === 0)) {
+    return (
+      <NoMatchesContainer>
+        <NoMatchesIllustrationWrap>
+          <Illustration name="no-matches" />
+        </NoMatchesIllustrationWrap>
+        <NoMatchesSubtitle>
+          {'Here will be the history\nof your matches'}
+        </NoMatchesSubtitle>
+      </NoMatchesContainer>
+    )
+  } else if (data?.length > 0 && !isLoading) {
     return (
       <>
         <FilterBlock>
@@ -81,17 +91,8 @@ export const MatchList: React.FC<Props> = ({ data, isLoading = true }) => {
       </>
     )
   } else {
-    return (
-      <NoMatchesContainer>
-        <NoMatchesIllustrationWrap>
-          <Illustration name="no-matches" />
-        </NoMatchesIllustrationWrap>
-        <NoMatchesSubtitle>
-          {'Here will be the history\nof your matches'}
-        </NoMatchesSubtitle>
-      </NoMatchesContainer>
-    )
+    return <NoMatchesContainer><Loader /></NoMatchesContainer>
   }
-}
+})
 
 export default MatchList

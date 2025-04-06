@@ -85,3 +85,12 @@ export const ProgressBlockWrap = styled.View`
 export const ProgressBlock = styled.View`
   flex: 0.5;
 `
+
+export const EmptyHistoryContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  padding-top: 48px;
+`

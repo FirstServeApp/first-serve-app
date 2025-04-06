@@ -14,7 +14,7 @@ type Props = {
 
 const PlayersListItem: React.FC<{ item: string }> = React.memo(({ item }) => {
   const { playersFilter, setPlayersFilter } = useFilters()
-  const onSelectContact = (name: string) => {
+  const onSelectPlayer = (name: string) => {
     if (playersFilter.includes(name)) {
       return setPlayersFilter(playersFilter.filter(item => item !== name))
     }
@@ -27,7 +27,7 @@ const PlayersListItem: React.FC<{ item: string }> = React.memo(({ item }) => {
       title={item}
       isChecked={playersFilter.includes(item)}
       type="checkbox"
-      onPress={() => onSelectContact(item)}
+      onPress={() => onSelectPlayer(item)}
     />
   )
 })

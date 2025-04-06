@@ -3,10 +3,10 @@ import HomeScreen from '../screens/HomeScreen'
 import MatchStatsScreen from '../screens/MatchStatsScreen'
 import IconBtn from '../components/UI/Button/IconBtn'
 import { TextS } from '../styles/typography'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation } from '@react-navigation/native'
 import { getShareText } from '../utils/matchUtils'
-import { Share } from 'react-native'
-import { Match, Set } from '../services/matchService'
+import Share, { ShareOptions } from 'react-native-share'
+import { CreateMatchSet, Match, MatchData, Set } from '../services/matchService'
 import StartMatchScreen from '../screens/StartMatchScreen'
 import COLORS from '../styles/colors'
 import PlayerDetailsScreen from '../screens/PlayerDetailsScreen'
@@ -21,17 +21,21 @@ import MatchScreen from '../screens/MatchScreen'
 import WinnerScreen from '../screens/WinnerScreen'
 import EditMatchScreen from '../screens/EditMatchScreen'
 import { PopupNames, usePopup } from '../context/PopupContext'
+import { useMatch } from '../context/MatchContext'
+import { Keyboard } from 'react-native'
 
 export type AuthenticatedStackParams = {
   Home: undefined;
   EditMatch: { id: string, opponentName?: string };
-  MatchStats: { matchId: string, matchData?: Match<Set>, userName?: string };
+  MatchStats: { matchId: string, matchData?: Match<Set>, userName?: string, opponentName?: string };
   StartMatch: undefined;
   PlayerDetails: undefined;
-  ChooseFromContacts: { player: 'me' | 'opponent' };
+  ChooseFromContacts: { player: 'me' | 'opponent', from: RouteProp<AuthenticatedStackParams, 'EditMatch'>
+  | RouteProp<AuthenticatedStackParams, 'PlayerDetails'>};
   PlayersFilter: undefined;
-  Match: undefined;
-  Winner: { data: Match<Set> };
+  Match: { pausedMatchId?: number } | undefined;
+  // Winner: { data: Match<Set> };
+  Winner: { data: MatchData<CreateMatchSet>, pausedMatchId?: number | undefined };
 }
 
 export type AuthenticatedNavigationProps = NativeStackNavigationProp<AuthenticatedStackParams>
@@ -42,13 +46,26 @@ const AuthenticatedNavigation = () => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const { setPlayersFilter, playersFilter } = useFilters()
   const { showPopup } = usePopup()
+  const { undo, setPausedMatchId } = useMatch()
 
   const onShare = async (matchData?: Match<Set>, userName?: string) => {
     if (matchData && userName) {
-      await Share.share({
-        message: getShareText(matchData, userName),
-        title: '🎾 Match Result 🎾',
-      })
+      const message = getShareText(matchData, userName)
+      const options: ShareOptions = {
+        activityItemSources: [
+          {
+            placeholderItem: { type: 'text', content: message },
+            item: {
+              default: { type: 'text', content: message },
+              message: null, // Specify no text to share via Messages app.
+            },
+            linkMetadata: {
+              title: '🎾 Match Result 🎾',
+            },
+          },
+        ],
+      }
+      await Share.open(options)
     }
   }
 
@@ -62,7 +79,7 @@ const AuthenticatedNavigation = () => {
         headerShadowVisible: false,
         headerTitleAlign: 'center',
         headerBackVisible: false,
-        headerLeft: () => <IconBtn icon="arrow-left" onPress={() => navigation.goBack()} />,
+        headerLeft: () => <IconBtn icon="arrow-left" type="flat" onPress={() => navigation.goBack()} />,
       }}
     >
       <AuthenticatedStack.Screen
@@ -76,7 +93,15 @@ const AuthenticatedNavigation = () => {
           headerShown: true,
           headerTitleAlign: 'center',
           headerTitle: () => <TextS>Edit match</TextS>,
-          headerRight: () => <IconBtn icon="trash" onPress={() => showPopup(PopupNames.DeleteMatch)} />,
+          headerRight: () => (
+            <IconBtn
+              icon="trash"
+              onPress={() => {
+                Keyboard.dismiss()
+                showPopup(PopupNames.DeleteMatch)
+              }}
+            />
+          ),
         }}
         component={EditMatchScreen}
       />
@@ -90,12 +115,13 @@ const AuthenticatedNavigation = () => {
           headerRight: () => (<HeaderIconsWrap>
             <IconBtn
               icon="edit"
+              type="flat"
               onPress={() => navigation.navigate('EditMatch', {
                 id: route.params.matchId,
-                opponentName: route.params.matchData?.opponentName,
+                opponentName: route.params.opponentName,
               })}
             />
-            <IconBtn icon="share" onPress={() => onShare(route.params.matchData, route.params.userName)} />
+            <IconBtn icon="share" type="flat" onPress={() => onShare(route.params.matchData, route.params.userName)} />
           </HeaderIconsWrap>),
         })}
         component={MatchStatsScreen}
@@ -113,6 +139,7 @@ const AuthenticatedNavigation = () => {
         name="Match"
         options={{
           animation: 'fade_from_bottom',
+          gestureEnabled: false,
         }}
         component={MatchScreen}
       />
@@ -122,7 +149,17 @@ const AuthenticatedNavigation = () => {
           headerShown: true,
           animation: 'fade',
           headerTitle: () => <TextS>Match tracking</TextS>,
-          headerLeft: () => null,
+          // headerLeft: () => null,
+          headerLeft: () => (
+            <IconBtn
+              icon="arrow-left" type="flat"
+              onPress={() => {
+                setPausedMatchId(undefined)
+                undo()
+                navigation.goBack()
+              }}
+            />
+          ),
         }}
         component={WinnerScreen}
       />

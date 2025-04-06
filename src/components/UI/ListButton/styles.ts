@@ -12,7 +12,7 @@ export const ListButtonWrap = styled.TouchableOpacity`
   border-top-color: ${COLORS.lightGray};
 `
 
-export const ListCheckboxButtonWrap = styled.View`
+export const ListCheckboxButtonWrap = styled.TouchableOpacity`
   width: 100%;
   flex-direction: row;
   justify-content: space-between;

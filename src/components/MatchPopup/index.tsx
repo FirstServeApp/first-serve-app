@@ -1,7 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react'
-import BottomSheetPopup from '../UI/BottomSheet'
-import { MatchPopupContainer, BtnsListContainer, HeaderWrap } from './styles'
+import { MatchPopupContainer, BtnsListContainer, HeaderWrap, HeaderBlock } from './styles'
 import ListButton from '../UI/ListButton'
 import { useMatch } from '../../context/MatchContext'
 import { Header3 } from '../../styles/typography'
@@ -10,78 +8,136 @@ import ConfirmPopup from './ConfirmPopup'
 import ButtonComponent from '../UI/Button'
 import { useAuth } from '../../context/AuthContext'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import BottomSheetPopup2 from '../UI/BottomSheet/BottomSheetPopup'
+import { StyleSheet } from 'react-native'
 
+
+enum MatchPopupNames {
+  default = 'DEFAULT',
+  pause = 'PAUSE',
+  cancel = 'CANCEL',
+  finish = 'FINISH'
+}
+
+const styles = StyleSheet.create({
+  icon: {
+    position: 'absolute',
+    top: 0,
+    right: 24,
+  },
+})
 
 const MatchPopup: React.FC = () => {
   const { user } = useAuth()
-  const { showMatchPopup, setShowMatchPopup, finishMatch, pauseMatch, cancelMatch } = useMatch()
-  const [showPausePopup, setShowPausePopup] = useState(false)
-  const [showCancelPopup, setShowCancelPopup] = useState(false)
-  const [showFinishPopup, setShowFinishPopup] = useState(false)
+  const { showMatchPopup, setShowMatchPopup, finishMatch, pauseMatchV2, cancelMatchV2, opponentName } = useMatch()
+  const [currentPopup, setCurrentPopup] = useState(MatchPopupNames.default)
   const { bottom } = useSafeAreaInsets()
+  const [loading, setLoading] = useState(false)
 
-  const closeAll = () => {
-    setShowMatchPopup(false)
-    setShowPausePopup(false)
-    setShowCancelPopup(false)
-    setShowFinishPopup(false)
+  const showPopup = (popup: MatchPopupNames): boolean => {
+    return popup === currentPopup && showMatchPopup
   }
 
-  const pressHandler = (callback: () => void) => {
-    callback()
+  const close = () => {
     setShowMatchPopup(false)
+    setCurrentPopup(MatchPopupNames.default)
   }
 
   return (
     <>
-      <BottomSheetPopup
+      <BottomSheetPopup2
         visible={showMatchPopup}
-        onClose={() => setShowMatchPopup(false)}
-        snapPoints={['30%']}
+        onClose={close}
       >
         <MatchPopupContainer bottomInset={bottom}>
-          <HeaderWrap>
-            <Header3>Details</Header3>
-            <IconBtn icon="cancel" type="light" onPress={() => setShowMatchPopup(false)} />
-          </HeaderWrap>
-          <BtnsListContainer>
-            <ListButton title="Pause" leftIcon="pause" onPress={() => pressHandler(() => setShowPausePopup(true))} />
-            <ListButton title="Finish" leftIcon="done" onPress={() => pressHandler(() => setShowFinishPopup(true))} />
-            <ListButton
-              title="Cancel without saving"
-              leftIcon="cancel"
-              onPress={() => pressHandler(() => setShowCancelPopup(true))} />
-          </BtnsListContainer>
+          {showPopup(MatchPopupNames.default) && (
+            <>
+              <HeaderBlock>
+                <HeaderWrap>
+                  <Header3>Details</Header3>
+                </HeaderWrap>
+              </HeaderBlock>
+              <IconBtn icon="cancel" type="flat" onPress={close} style={styles.icon} />
+              <BtnsListContainer>
+                <ListButton
+                  title="Pause" leftIcon="pause"
+                  onPress={() => setCurrentPopup(MatchPopupNames.pause)}
+                />
+                <ListButton
+                  title="Finish" leftIcon="done"
+                  onPress={() => setCurrentPopup(MatchPopupNames.finish)}
+                />
+                <ListButton
+                  title="Cancel without saving"
+                  leftIcon="cancel"
+                  onPress={() => setCurrentPopup(MatchPopupNames.cancel)}
+                />
+              </BtnsListContainer>
+            </>
+          )}
+          {showPopup(MatchPopupNames.pause) && (
+            <ConfirmPopup
+              title="Pause match"
+              subtitle="You can return to the game any time"
+              onClose={close}
+            >
+              <ButtonComponent title="Cancel" type="secondary" onPress={close} />
+              <ButtonComponent
+                title="Pause"
+                loading={loading}
+                onPress={() => {
+                  setLoading(true)
+                  pauseMatchV2()
+                    .finally(() => setLoading(false))
+                }}
+              />
+            </ConfirmPopup>
+          )}
+          {showPopup(MatchPopupNames.finish) && (
+            <ConfirmPopup
+              title="Who retired?"
+              onClose={close}
+            >
+              <ButtonComponent
+                title={opponentName || 'Opponent'}
+                type="opponent"
+                loading={loading}
+                onPress={() => {
+                  setLoading(true)
+                  finishMatch(false)
+                  setLoading(false)
+                }}
+              />
+              <ButtonComponent
+                title={user?.name || 'Me'}
+                loading={loading}
+                onPress={() => {
+                  setLoading(true)
+                  finishMatch(true)
+                  setLoading(false)
+                }}
+              />
+            </ConfirmPopup>
+          )}
+          {showPopup(MatchPopupNames.cancel) && (
+            <ConfirmPopup
+              title={'Are you sure you want to cancel the match without saving?'}
+              onClose={close}
+            >
+              <ButtonComponent title="Cancel" type="secondary" onPress={close} />
+              <ButtonComponent
+                title="Yes"
+                loading={loading}
+                onPress={() => {
+                  setLoading(true)
+                  cancelMatchV2()
+                    .finally(() => setLoading(false))
+                }}
+              />
+            </ConfirmPopup>
+          )}
         </MatchPopupContainer>
-      </BottomSheetPopup>
-      <ConfirmPopup
-        title="Pause match"
-        subtitle="You can return to the game any time"
-        height="32%"
-        visible={showPausePopup}
-        onClose={() => setShowPausePopup(false)}
-      >
-        <ButtonComponent title="Cancel" type="secondary" onPress={closeAll} />
-        <ButtonComponent title="Pause" onPress={pauseMatch} />
-      </ConfirmPopup>
-      <ConfirmPopup
-        title={'Are you sure you want \nto cancel the match without saving?'}
-        height="28%"
-        visible={showCancelPopup}
-        onClose={() => setShowCancelPopup(false)}
-      >
-        <ButtonComponent title="Cancel" type="secondary" onPress={closeAll} />
-        <ButtonComponent title="Yes" onPress={cancelMatch} />
-      </ConfirmPopup>
-      <ConfirmPopup
-        title="Who retired?"
-        height="22%"
-        visible={showFinishPopup}
-        onClose={() => setShowFinishPopup(false)}
-      >
-        <ButtonComponent title="Opponent" type="opponent" onPress={() => finishMatch(false)} />
-        <ButtonComponent title={user?.name || 'Me'} onPress={() => finishMatch(true)} />
-      </ConfirmPopup>
+      </BottomSheetPopup2>
     </>
   )
 }

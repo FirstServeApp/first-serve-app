@@ -10,60 +10,71 @@ import { ButtonRow } from './styles'
 type Props = {
   name?: string;
   isRed?: boolean;
+  disabled?: boolean;
 }
 
-const DrawingBlock: React.FC<Props> = memo(({ name }) => {
-  const { setDrawingWinner, setCurrentState, opponentName } = useMatch()
+const DrawingBlock: React.FC<Props> = memo(({ name, disabled }) => {
+  const { setDrawingWinner, setCurrentState, opponentName, addToMatchHistory} = useMatch()
 
   return (
     <>
-      <TextL>Who won the drawing?</TextL>
+      <TextL>Who won the point?</TextL>
       <ButtonComponent
         title={name || 'Me'} size="M"
+        disabled={disabled}
         onPress={() => {
           setDrawingWinner(Player.me)
           setCurrentState(GameStates.gameFirstStep)
+          addToMatchHistory()
         }}
       />
       <ButtonComponent
         title={opponentName || 'Opponent'} size="M"
+        disabled={disabled}
         type="opponent"
         onPress={() => {
           setDrawingWinner(Player.opponent)
           setCurrentState(GameStates.gameFirstStep)
+          addToMatchHistory()
         }}
       />
     </>
   )
 })
 
-const FirstServeBlock: React.FC<Props> = memo(({ name }) => {
-  const { opponentName, setCurrentServer, setCurrentState } = useMatch()
+const FirstServeBlock: React.FC<Props> = memo(({ name, disabled }) => {
+  const { opponentName, setCurrentServer, setCurrentState, launchMatch, addToMatchHistory } = useMatch()
 
   return (
     <>
       <TextL>Who is serving?</TextL>
       <ButtonComponent
         title={name || 'Me'} size="M"
+        disabled={disabled}
         onPress={() => {
+          launchMatch()
           setCurrentState(GameStates.drawing)
           setCurrentServer(Player.me)
+          addToMatchHistory()
         }}
       />
       <ButtonComponent
         title={opponentName || 'Opponent'} size="M"
+        disabled={disabled}
         type="opponent"
         onPress={() => {
+          launchMatch()
           setCurrentState(GameStates.drawing)
           setCurrentServer(Player.opponent)
+          addToMatchHistory()
         }}
       />
     </>
   )
 })
 
-const GameStepOne: React.FC<Props> = memo(({ isRed }) => {
-  const { setCurrentState, setDrawingServe } = useMatch()
+const GameStepOne: React.FC<Props> = memo(({ isRed, disabled }) => {
+  const { setCurrentState, setDrawingServe, addToMatchHistory } = useMatch()
 
   return (
     <>
@@ -71,26 +82,30 @@ const GameStepOne: React.FC<Props> = memo(({ isRed }) => {
         title="1st Serve"
         size="M"
         type={isRed ? 'opponent' : 'primary'}
+        disabled={disabled}
         onPress={() => {
           setDrawingServe(1)
           setCurrentState(GameStates.gameSecondStep)
+          addToMatchHistory()
         }}
       />
       <ButtonComponent
         title="2nd Serve"
         size="M"
         type={isRed ? 'opponent' : 'primary'}
+        disabled={disabled}
         onPress={() => {
           setDrawingServe(2)
           setCurrentState(GameStates.gameSecondStep)
+          addToMatchHistory()
         }}
       />
     </>
   )
 })
 
-const ReturnGameStepOne: React.FC<Props> = memo(({ isRed }) => {
-  const { setCurrentState, setGameScore, drawingWinner } = useMatch()
+const ReturnGameStepOne: React.FC<Props> = memo(({ isRed, disabled }) => {
+  const { setCurrentState, setGameScore, setDrawingServe, drawingWinner, addToMatchHistory } = useMatch()
 
   return (
     <>
@@ -99,29 +114,43 @@ const ReturnGameStepOne: React.FC<Props> = memo(({ isRed }) => {
           title="1st Serve"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setCurrentState(GameStates.gameSecondStep)}
+          onPress={() => {
+            setDrawingServe(1)
+            setCurrentState(GameStates.gameSecondStep)
+            addToMatchHistory()
+          }}
         />
         <ButtonComponent
           title="2nd Serve"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setCurrentState(GameStates.gameSecondStep)}
+          onPress={() => {
+            setDrawingServe(2)
+            setCurrentState(GameStates.gameSecondStep)
+            addToMatchHistory()
+          }}
         />
       </ButtonRow>
       <ButtonComponent
         title="Double Fault"
         size="M"
+        disabled={disabled}
         type={isRed ? 'opponent' : 'primary'}
-        onPress={() => setGameScore(drawingWinner, 'Double fault')}
+        onPress={() => {
+          setGameScore(drawingWinner, 'Double fault')
+          addToMatchHistory()
+        }}
       />
     </>
   )
 })
 
-const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
-  const { setGameScore, drawingWinner } = useMatch()
+const GameStepTwo: React.FC<Props> = memo(({ isRed, disabled }) => {
+  const { setGameScore, drawingWinner, addToMatchHistory } = useMatch()
 
   return (
     <>
@@ -130,15 +159,23 @@ const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
           title="Ace"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Ace')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Ace')
+            addToMatchHistory()
+          }}
         />
         <ButtonComponent
           title="Winner"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Winner')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Winner')
+            addToMatchHistory()
+          }}
         />
       </ButtonRow>
       <ButtonRow>
@@ -146,15 +183,23 @@ const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
           title="Forced error"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Forced error')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Forced error')
+            addToMatchHistory()
+          }}
         />
         <ButtonComponent
           title="Unforced error"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
+          disabled={disabled}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Unforced error')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Unforced error')
+            addToMatchHistory()
+          }}
         />
       </ButtonRow>
     </>
@@ -162,7 +207,7 @@ const GameStepTwo: React.FC<Props> = memo(({ isRed }) => {
 })
 
 const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
-  const { setGameScore, drawingWinner } = useMatch()
+  const { setGameScore, drawingWinner, addToMatchHistory } = useMatch()
 
   return (
     <>
@@ -170,7 +215,10 @@ const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
         title="Winner"
         size="M"
         type={isRed ? 'opponent' : 'primary'}
-        onPress={() => setGameScore(drawingWinner, 'Winner')}
+        onPress={() => {
+          setGameScore(drawingWinner, 'Winner')
+          addToMatchHistory()
+        }}
       />
       <ButtonRow>
         <ButtonComponent
@@ -178,14 +226,20 @@ const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
           size="M"
           type={isRed ? 'opponent' : 'primary'}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Forced error')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Forced error')
+            addToMatchHistory()
+          }}
         />
         <ButtonComponent
           title="Unforced error"
           size="M"
           type={isRed ? 'opponent' : 'primary'}
           style={{ width: '48%' }}
-          onPress={() => setGameScore(drawingWinner, 'Unforced error')}
+          onPress={() => {
+            setGameScore(drawingWinner, 'Unforced error')
+            addToMatchHistory()
+          }}
         />
       </ButtonRow>
     </>
@@ -194,26 +248,26 @@ const ReturnGameStepTwo: React.FC<Props> = memo(({ isRed }) => {
 
 const ButtonsBlock = () => {
   const { user } = useAuth()
-  const { currentState, currentServer, drawingWinner } = useMatch()
+  const { currentState, currentServer, drawingWinner, testMatchFinish } = useMatch()
   const isReturn = currentServer !== drawingWinner
   const isRed = drawingWinner === Player.opponent
 
   switch (currentState) {
     case GameStates.firstServe:
-      return <FirstServeBlock name={user?.name} />
+      return <FirstServeBlock name={user?.name} disabled={testMatchFinish} />
     case GameStates.drawing:
-      return <DrawingBlock name={user?.name} />
+      return <DrawingBlock name={user?.name} disabled={testMatchFinish} />
     case GameStates.gameFirstStep:
       if (isReturn) {
-        return <ReturnGameStepOne isRed={isRed} />
+        return <ReturnGameStepOne isRed={isRed} disabled={testMatchFinish} />
       } else {
-        return <GameStepOne isRed={isRed} />
+        return <GameStepOne isRed={isRed} disabled={testMatchFinish} />
       }
     case GameStates.gameSecondStep:
       if (isReturn) {
-        return <ReturnGameStepTwo isRed={isRed} />
+        return <ReturnGameStepTwo isRed={isRed} disabled={testMatchFinish} />
       } else {
-        return <GameStepTwo isRed={isRed} />
+        return <GameStepTwo isRed={isRed} disabled={testMatchFinish} />
       }
     default:
       return null

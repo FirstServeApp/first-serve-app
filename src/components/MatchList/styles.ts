@@ -5,10 +5,12 @@ import { textLarge } from '../../styles/mixins'
 
 const { bgGrey, darkGrey } = COLORS
 
+
 export const MatchCardContainer = styled.View`
   width: 100%;
   height: 120px;
   padding: 8px 16px;
+  /* padding-left: 16px; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -28,7 +30,7 @@ export const MatchCardBottomSection = styled.View`
   border-top-color: ${bgGrey};
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
-  background: white;
+  background: ${COLORS.lotion};
 `
 
 export const TopRow = styled.View`
@@ -59,7 +61,7 @@ export const BottomScoreBlock = styled.View`
   padding-bottom: 8px;
 `
 
-export const TopCell = styled.View`
+export const TopCell = styled.View<{ last?: boolean }>`
   width: 40px;
   padding-top: 8px;
   padding-bottom: 16px;
@@ -67,9 +69,10 @@ export const TopCell = styled.View`
   align-items: center;
   border-left-width: 1px;
   border-left-color: ${bgGrey};
+  margin-right: ${({ last }) => last ? '-8px' : '0'};
 `
 
-export const BottomCell = styled.View`
+export const BottomCell = styled.View<{ last?: boolean }>`
   width: 40px;
   padding-top: 16px;
   padding-bottom: 8px;
@@ -77,6 +80,7 @@ export const BottomCell = styled.View`
   align-items: center;
   border-left-width: 1px;
   border-left-color: ${bgGrey};
+  margin-right: ${({ last }) => last ? '-8px' : '0'};
 `
 
 export const TopIconCell = styled.View`
@@ -116,7 +120,9 @@ export const MatchListContainer = styled.View`
 `
 
 export const NoMatchesContainer = styled.View`
-  flex: 1;
+  flex-grow: 1;
+  width: 100%;
+  padding: 24px;
   justify-content: center;
   align-items: center;
 `
@@ -126,6 +132,7 @@ export const NoMatchesIllustrationWrap = styled.View`
   justify-content: center;
   align-items: center;
   margin-bottom: 16px;
+  /* margin-top: -96px; */
 `
 
 export const NoMatchesSubtitle = styled.Text`

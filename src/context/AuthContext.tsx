@@ -7,6 +7,7 @@ import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 're
 import SocialAuthService, { FbRes } from '../services/SocialAuthService'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import Toast from 'react-native-toast-message'
+import Constants from 'expo-constants'
 
 
 export type AuthContextData = {
@@ -26,6 +27,7 @@ export type AuthContextData = {
   googleSignin(): Promise<void>;
   facebookSignin(): Promise<void>;
   appleSigin(): Promise<void>;
+  changeName(name: string): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData)
@@ -40,6 +42,9 @@ export const useAuth = (): AuthContextData => {
   return context
 }
 
+// const IOS_CLIENT_ID = Constants.manifest?.extra?.IOS_CLIENT_ID
+const IOS_CLIENT_ID = Constants.expoConfig?.extra?.IOS_CLIENT_ID
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>()
   const [avatar, setAvatar] = useState<any>()
@@ -49,9 +54,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isSocial, setSocial] = useState<boolean>(false)
 
   GoogleSignin.configure({
-    // webClientId: '27486761319-aftp0a51jrjq0akdj6vp589id8jeancg.apps.googleusercontent.com',
-    webClientId: '274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
-    iosClientId: '274856761319-vjs2kl17lbd4985r8lqsohhn2nmirbml.apps.googleusercontent.com',
+    webClientId: IOS_CLIENT_ID,
+    iosClientId: IOS_CLIENT_ID,
     profileImageSize: 200,
     offlineAccess: true,
   })
@@ -91,51 +95,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const signup = async (email: string, password: string, name: string) => {
-    try {
-      const tokens = await AuthService.register(email, password, name)
-      if (!tokens) {
-        throw new Error('Registration error')
-      }
-
-      const { accessToken, refreshToken } = tokens.data
-
-      setTokens({ accessToken, refreshToken })
-
-      await setItemInStore(StoreKeys.accessToken, accessToken)
-      await setItemInStore(StoreKeys.refreshToken, refreshToken)
-
-      await getCurrentUser()
-    } catch (err: any) {
-      if (err.message.includes('400')) {
-        return '400'
-      } else if (err.message.includes('500')) {
-        return '500'
-      }
+    const tokens = await AuthService.register(email, password, name)
+    if (!tokens) {
+      throw new Error('Registration error')
     }
+
+    const { accessToken, refreshToken } = tokens.data
+
+    setTokens({ accessToken, refreshToken })
+
+    await setItemInStore(StoreKeys.accessToken, accessToken)
+    await setItemInStore(StoreKeys.refreshToken, refreshToken)
+
+    await getCurrentUser()
   }
 
   const login = async (email: string, password: string) => {
-    try {
-      const tokens = await AuthService.login(email, password)
-      if (!tokens) {
-        throw new Error('Login error')
-      }
-
-      const { accessToken, refreshToken } = tokens.data
-
-      setTokens({ accessToken, refreshToken })
-
-      await setItemInStore(StoreKeys.accessToken, accessToken)
-      await setItemInStore(StoreKeys.refreshToken, refreshToken)
-
-      await getCurrentUser()
-    } catch (err: any) {
-      if (err.message.includes('400')) {
-        return '400'
-      } else if (err.message.includes('500')) {
-        return '500'
-      }
+    const tokens = await AuthService.login(email, password)
+    if (!tokens) {
+      throw new Error('Login error')
     }
+
+    const { accessToken, refreshToken } = tokens.data
+
+    setTokens({ accessToken, refreshToken })
+
+    await setItemInStore(StoreKeys.accessToken, accessToken)
+    await setItemInStore(StoreKeys.refreshToken, refreshToken)
+
+    await getCurrentUser()
   }
 
   const googleSignin = async () => {
@@ -226,11 +214,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       })
-      console.log(JSON.stringify(credentials))
+
       const tokens = await SocialAuthService.appleSignin(
         credentials.user,
-        credentials.email || 'notrealemail@gmail.com',
-        credentials.fullName?.givenName || 'notrealname',
+        credentials.email || `${Math.floor(Math.random()*(10**16))}@firstserve.app`,
+        credentials.fullName?.givenName || 'User',
       )
 
       if (!tokens) {
@@ -263,6 +251,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAvatar(imageUrl)
   }
 
+  const changeName = async (name: string) => {
+    return await UserService
+      .changeName(name)
+      .then(() => setUser(prev => {
+        const updUser = prev
+        updUser!.name = name
+        return updUser
+      }))
+  }
+
   const deleteAccount = async () => {
     const res = await UserService.deleteAccount()
     if (res.status === 200) {
@@ -276,14 +274,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const accessToken = await getItemFromStore(StoreKeys.accessToken)
       const refreshToken = await getItemFromStore(StoreKeys.refreshToken)
       const onboardingStatus = await getItemFromStore(StoreKeys.onboardingStatus)
+      const lastOpenedTime = new Date(await getItemFromStore(StoreKeys.lastOpenedTime))
       const isSocial = await getItemFromStore(StoreKeys.isSocial)
 
       // if (!accessToken || !refreshToken) {
       //   throw new Error('Authentication error. Cannot get tokens from secure store')
       // }
 
+      const currentDate = new Date()
+      const twoMonthsAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 2))
+
       setTokens({ accessToken, refreshToken })
-      setFirstLaunch(!onboardingStatus)
+      setFirstLaunch(!onboardingStatus || lastOpenedTime <= twoMonthsAgo)
       setSocial(!!isSocial)
 
       await getCurrentUser()
@@ -321,6 +323,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     googleSignin,
     facebookSignin,
     appleSigin,
+    changeName,
   }
 
   return (

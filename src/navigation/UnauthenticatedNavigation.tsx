@@ -29,6 +29,7 @@ const UnauthenticatedStack = createNativeStackNavigator<UnauthenticatedStackPara
 const UnauthenticatedNavigation = () => {
   const navigation = useNavigation<UnauthenticatedNavigationProps>()
   const { isFirstLaunch } = useAuth()
+  // const isFirstLaunch = true
 
   return (
     <UnauthenticatedStack.Navigator

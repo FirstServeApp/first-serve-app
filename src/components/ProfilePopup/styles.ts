@@ -1,11 +1,12 @@
 import styled from 'styled-components/native'
 
 
-export const ProfilePopupContainer = styled.View`
+export const ProfilePopupContainer = styled.View<{ bottomInset: number }>`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding: 16px;
+  padding-bottom: ${props => `${props.bottomInset}px`};
 `
 
 export const ProfileInfoContainer = styled.View`

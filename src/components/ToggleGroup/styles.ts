@@ -12,7 +12,7 @@ export const Driver = styled.View`
   width: 100%;
   height: 1px;
   background: ${COLORS.bgGrey};
-  /* margin-top: 16px; */
+  z-index: 0;
 `
 
 export const ButtonsBlock = styled.View`
@@ -21,6 +21,7 @@ export const ButtonsBlock = styled.View`
   align-items: center;
   justify-content: flex-start;
   gap: 16px;
+  z-index: 2;
 `
 
 export const BtnWrap = styled.TouchableOpacity`
@@ -35,5 +36,5 @@ export const BtnUnderline = styled.View`
   height: 2px;
   background: ${COLORS.black};
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
 `

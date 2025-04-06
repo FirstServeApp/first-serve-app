@@ -1,6 +1,6 @@
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2, TextS } from '../../../styles/typography'
-import { styles, ButtonsBlock } from '../../../components/UI/Container'
+import { styles } from '../../../components/UI/Container'
 import { LinkWrap, Subtitle } from '../styles'
 import Link from '../../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
@@ -18,8 +18,9 @@ import { formatTime } from '../../../utils/timeUtils'
 import COLORS from '../../../styles/colors'
 import AuthService from '../../../services/AuthService'
 import { useTimer } from 'react-timer-hook'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
+import { getButtonsBlockStyles, keyboardDidHideListener, keyboardDidShowListener } from '../../../utils/keyboardUtils'
 
 
 type Props = NativeStackScreenProps<UnauthenticatedStackParams, 'PasswordRecoveryStep2'>
@@ -34,6 +35,9 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
     resolver: yupResolver(otpSchema),
     mode: 'onBlur',
   })
+  const [keyboardOffset, setKeyboardOffset] = useState<number>(0)
+  const { bottom } = useSafeAreaInsets()
+  const { buttonsBlock, onKeyboardOpen } = getButtonsBlockStyles(bottom, keyboardOffset)
 
   const onSubmit: SubmitHandler<OTPFormData> = async data => {
     setLoading(true)
@@ -42,13 +46,8 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
       .verifyOTP(route.params.id, data.otp)
       .then(() => navigation.navigate('PasswordRecoveryStep3', { id: route.params.id }))
       .catch(err => {
-        console.log(err)
-        if (err === '400') {
-          methods.setError('otp', { message: 'Invalid OTP code', type: 'onBlur' })
-          return setLoading(false)
-        } else if (err === '404') {
-          methods.setError('otp', { message: 'OTP code has expired', type: 'onBlur' })
-          return setLoading(false)
+        if (err instanceof Error) {
+          methods.setError('otp', { message: err.message, type: 'onBlur' })
         }
       })
       .finally(() => setLoading(false))
@@ -59,6 +58,13 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
       const newExpiryTimestamp = new Date()
       newExpiryTimestamp.setSeconds(newExpiryTimestamp.getSeconds() + (60 * 2))
       restart(newExpiryTimestamp)
+    }
+
+    const show = keyboardDidShowListener(setKeyboardOffset)
+    const hide = keyboardDidHideListener(setKeyboardOffset)
+    return () => {
+      show.remove()
+      hide.remove()
     }
   }, [])
 
@@ -83,21 +89,21 @@ const OTPCodeScreen: React.FC<Props> = ({ route }) => {
             autoFocus
           />
         </FormProvider>
-        <ButtonsBlock>
+        <View style={[buttonsBlock, !!keyboardOffset && onKeyboardOpen]}>
           <ButtonComponent
             title="Complete"
             loading={isLoading}
             disabled={!methods.formState.isDirty || !methods.formState.isValid}
             onPress={methods.handleSubmit(onSubmit)}
           />
-          {totalSeconds > 0 ? (
-            <TextS color={COLORS.darkGrey}>Send code again in {formatTime(totalSeconds)}</TextS>
-          ) : (
-            <LinkWrap>
+          <LinkWrap>
+            {totalSeconds > 0 ? (
+              <TextS color={COLORS.darkGrey}>Send code again in {formatTime(totalSeconds)}</TextS>
+            ) : (
               <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Send code again</Link>
-            </LinkWrap>
-          )}
-        </ButtonsBlock>
+            )}
+          </LinkWrap>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )

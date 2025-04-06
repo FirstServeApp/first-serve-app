@@ -15,9 +15,12 @@ type Props = {
   selectedBtn: ButtonGroupNames;
   setSelectedBtn: (tab: ButtonGroupNames) => void;
   mode?: ToggleBtnsNames;
+  setsCount: number;
 }
 
-const MatchButtonGroup: React.FC<Props> = ({ selectedBtn, setSelectedBtn, mode = ToggleBtnsNames.Stats }) => {
+const MatchButtonGroup: React.FC<Props> = ({
+  selectedBtn, setSelectedBtn, mode = ToggleBtnsNames.Stats, setsCount,
+}) => {
   const getTextColor = (button: ButtonGroupNames) => {
     return button === selectedBtn ? COLORS.black : COLORS.darkGrey
   }
@@ -38,18 +41,18 @@ const MatchButtonGroup: React.FC<Props> = ({ selectedBtn, setSelectedBtn, mode =
       >
         <TextS additional color={getTextColor(ButtonGroupNames.FirstSet)}>1 set</TextS>
       </TabWrap>
-      <TabWrap
+      {setsCount >= 2 && <TabWrap
         selected={selectedBtn === ButtonGroupNames.SecondSet}
         onPress={() => setSelectedBtn(ButtonGroupNames.SecondSet)}
       >
         <TextS additional color={getTextColor(ButtonGroupNames.SecondSet)}>2 set</TextS>
-      </TabWrap>
-      <TabWrap
+      </TabWrap>}
+      {setsCount >= 3 && <TabWrap
         selected={selectedBtn === ButtonGroupNames.ThirdSet}
         onPress={() => setSelectedBtn(ButtonGroupNames.ThirdSet)}
       >
         <TextS additional color={getTextColor(ButtonGroupNames.ThirdSet)}>3 set</TextS>
-      </TabWrap>
+      </TabWrap>}
     </ButtonGroupContainer>
   )
 }

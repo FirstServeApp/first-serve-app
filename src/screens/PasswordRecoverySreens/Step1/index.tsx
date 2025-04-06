@@ -1,6 +1,6 @@
 import ButtonComponent from '../../../components/UI/Button'
 import { Header2, TextS } from '../../../styles/typography'
-import { styles, ButtonsBlock } from '../../../components/UI/Container'
+import { styles } from '../../../components/UI/Container'
 import { LinkWrap, Subtitle } from '../styles'
 import Link from '../../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
@@ -10,9 +10,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { EmailFormData, emailSchema } from '../../../validations/authValidations'
 import OneFieldForm from '../../../components/OneFieldForm'
 import AuthService from '../../../services/AuthService'
-import { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { useEffect, useState } from 'react'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
+import { keyboardDidShowListener, getButtonsBlockStyles, keyboardDidHideListener } from '../../../utils/keyboardUtils'
 
 
 const PasswordRecoveryScreen: React.FC = () => {
@@ -22,20 +23,31 @@ const PasswordRecoveryScreen: React.FC = () => {
     resolver: yupResolver(emailSchema),
     mode: 'onBlur',
   })
+  const [keyboardOffset, setKeyboardOffset] = useState<number>(0)
+  const { bottom } = useSafeAreaInsets()
+  const { buttonsBlock, onKeyboardOpen } = getButtonsBlockStyles(bottom, keyboardOffset)
 
   const onSubmit: SubmitHandler<EmailFormData> = async data => {
     setLoading(true)
     await AuthService
       .sendOTP(data.email)
-      .then(res => navigation.navigate('PasswordRecoveryStep2', { email: data.email, id: res.data.id }))
+      .then(res => navigation.navigate('PasswordRecoveryStep2', { email: data.email, id: res?.data.id }))
       .catch(err => {
-        if (err === '404' || err === '400') {
-          methods.setError('email', { message: 'Invalid email address', type: 'onBlur' })
-          return setLoading(false)
+        if (err instanceof Error) {
+          methods.setError('email', { message: err.message, type: 'onBlur' })
         }
       })
       .finally(() => setLoading(false))
   }
+
+  useEffect(() => {
+    const show = keyboardDidShowListener(setKeyboardOffset)
+    const hide = keyboardDidHideListener(setKeyboardOffset)
+    return () => {
+      show.remove()
+      hide.remove()
+    }
+  }, [])
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -54,7 +66,7 @@ const PasswordRecoveryScreen: React.FC = () => {
             editable={!isLoading}
           />
         </FormProvider>
-        <ButtonsBlock>
+        <View style={[buttonsBlock, !!keyboardOffset && onKeyboardOpen]}>
           <ButtonComponent
             title="Next"
             loading={isLoading}
@@ -64,7 +76,7 @@ const PasswordRecoveryScreen: React.FC = () => {
           <LinkWrap>
             <Link onPress={() => navigation.navigate('Login')}>I remembered password</Link>
           </LinkWrap>
-        </ButtonsBlock>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )

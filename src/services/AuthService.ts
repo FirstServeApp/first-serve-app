@@ -13,11 +13,31 @@ interface TokensRes extends AxiosResponse {
 
 class AuthService {
   async register(email: string, password: string, name: string) {
-    return await $api.post<AxiosRequestConfig, TokensRes>('/auth/signup', { email, password, name })
+    try {
+      const response = await $api.post<AxiosRequestConfig, TokensRes>('/auth/signup', { email, password, name })
+
+      return response
+    } catch (error: any) {
+      if (error.response && error.response.status !== 500) {
+        const errorMessage = error.response.data.message
+
+        throw new Error(errorMessage)
+      }
+    }
   }
 
   async login(email: string, password: string) {
-    return await $api.post<AxiosRequestConfig, TokensRes>('/auth/login', { email, password })
+    try {
+      const response = await $api.post<AxiosRequestConfig, TokensRes>('/auth/login', { email, password })
+
+      return response
+    } catch (error: any) {
+      if (error.response && error.response.status !== 500) {
+        const errorMessage = error.response.data.message
+
+        throw new Error(errorMessage)
+      }
+    }
   }
 
   async refresh(refreshToken: string) {
@@ -38,27 +58,45 @@ class AuthService {
   }
 
   async sendOTP(email: string) {
-    return await $api.post('/auth/forgot-password/send-otp', { email })
+    try {
+      const response = await $api.post('/auth/forgot-password/send-otp', { email })
+
+      return response
+    } catch (error: any) {
+      if (error.response && error.response.status !== 500) {
+        const errorMessage = error.response.data.message
+
+        throw new Error(errorMessage)
+      }
+    }
   }
 
-  verifyOTP(id: string, code: string) {
-    return new Promise(async (resolve, reject) => {
-      await $api.post('/auth/forgot-password/verify', { id, otpCode: code })
-        .then(res => resolve(res))
-        .catch(err => {
-          if (err.message.includes('400')) {
-            return reject('400')
-          } else if (err.message.includes('404')) {
-            return reject('404')
-          } else if (err.message.includes('500')) {
-            return reject('500')
-          }
-        })
-    })
+  async verifyOTP(id: string, code: string) {
+    try {
+      const response = await $api.post('/auth/forgot-password/verify', { id, otpCode: code })
+
+      return response
+    } catch (error: any) {
+      if (error.response && error.response.status !== 500) {
+        const errorMessage = error.response.data.message
+
+        throw new Error(errorMessage)
+      }
+    }
   }
 
   async changePassword(id: string, password: string) {
-    return await $api.post('/auth/forgot-password/change', { id, password })
+    try {
+      const response = await $api.post('/auth/forgot-password/change', { id, password })
+
+      return response
+    } catch (error: any) {
+      if (error.response && error.response.status !== 500) {
+        const errorMessage = error.response.data.message
+
+        throw new Error(errorMessage)
+      }
+    }
   }
 }
 

@@ -26,7 +26,7 @@ const MatchStatsScreen: React.FC<Props> = ({ route }) => {
   const [selectedButton, setSelectedButton] = useState<ToggleBtnsNames>(ToggleBtnsNames.Stats)
   const [data, setData] = useState<Match<Set>>()
   const [stat, setStat] = useState<MatchDetails>()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const getMatches = async () => {
@@ -34,14 +34,24 @@ const MatchStatsScreen: React.FC<Props> = ({ route }) => {
       const statistics = await MatchService.getDetails(route.params.matchId)
       setData(res.data)
       setStat(statistics.data)
-      navigation.setParams({ matchData: res.data, userName: user?.name })
+      navigation.setParams({ matchData: res.data, userName: user?.name, opponentName: res.data.opponentName })
     }
 
-    getMatches()
+    getMatches().catch(() => logout())
   }, [])
+
+  // useEffect(() => {
+  //   if (data) {
+  //     navigation.setParams({ matchData: data, userName: user?.name, opponentName: data.opponentName })
+  //   }
+  // }, [route.params.opponentName])
 
   if (!data || !stat) {
     return <Loader />
+  }
+
+  if (route.params.opponentName) {
+    data.opponentName = route.params.opponentName
   }
 
   return (
@@ -55,7 +65,7 @@ const MatchStatsScreen: React.FC<Props> = ({ route }) => {
         <StatsBlockContainer>
           <ToggleGroup selectedBtn={selectedButton} setSelectedBtn={setSelectedButton} />
           {selectedButton === ToggleBtnsNames.Stats ? (
-            <MatchStats data={stat} />
+            <MatchStats matchDetails={stat} />
           ) : (
             <MatchHistory data={data} />
           )}

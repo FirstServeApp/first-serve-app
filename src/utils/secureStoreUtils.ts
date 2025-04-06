@@ -6,7 +6,9 @@ export enum StoreKeys {
   user = 'USER',
   avatar = 'AVATAR',
   onboardingStatus = 'ONBOARDING_STATUS',
+  lastOpenedTime = 'LAST_OPENED_TIME',
   isSocial = 'IS_SOCIAL',
+  pausedMatches = 'PAUSED_MATCHES',
 }
 
 export const getItemFromStore = async (key: StoreKeys) => {

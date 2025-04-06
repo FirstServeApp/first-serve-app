@@ -79,7 +79,11 @@ export const Icon: React.FC<IconProps> = ({
     case 'mail':
       return <Mail width={size} height={size} stroke={color} {...rest} />
     case 'trash':
-      return <Trash width={size} height={size} stroke={color} strokeWidth={2} {...rest} />
+      return (<Trash
+        width={size} height={size}
+        stroke={color} strokeLinecap="round"
+        strokeLinejoin="round" strokeWidth={2}
+        {...rest} />)
     case 'watch':
       return <Watch width={size} height={size} stroke={color} {...rest} />
     case 'crown':

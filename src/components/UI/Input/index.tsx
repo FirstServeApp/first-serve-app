@@ -27,7 +27,7 @@ const Input: React.FC<InputProps> = ({ placeholder, secure, error, ...rest }) =>
           onChangeText={setValue}
           value={value}
           secureTextEntry={isSecureText}
-          maxLength={secure ? 16 : 36}
+          maxLength={secure ? 16 : 128}
           textAlignVertical="center"
           {...rest}
         />

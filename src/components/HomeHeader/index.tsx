@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import { Header3, TextS } from '../../styles/typography'
 import { HomeHeaderContainer, LeftContentBlock, UserInfoWrap } from './styles'
 import Avatar from '../../components/UI/Avatar'

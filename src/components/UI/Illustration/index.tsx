@@ -9,10 +9,11 @@ import Onboarding3 from '../../../assets/illustrations/onboarding-3.svg'
 import Onboarding4 from '../../../assets/illustrations/onboarding-4.svg'
 import Winner from '../../../assets/illustrations/winner.svg'
 import Loser from '../../../assets/illustrations/loser.svg'
+import EmptyHistory from '../../../assets/illustrations/empty-history.svg'
 
 
 export type IllustrationsNames = 'no-matches' | 'password-restored' | 'onboarding-1' | 'onboarding-2'
-  | 'onboarding-3' | 'onboarding-4' | 'loser' | 'winner'
+  | 'onboarding-3' | 'onboarding-4' | 'loser' | 'winner' | 'empty-history'
 
 interface IllustrationProps extends SvgProps {
   name: IllustrationsNames;
@@ -36,6 +37,8 @@ export const Illustration: React.FC<IllustrationProps> = ({ name }) => {
       return <Winner />
     case 'loser':
       return <Loser />
+    case 'empty-history':
+      return <EmptyHistory />
     default:
       return null
   }

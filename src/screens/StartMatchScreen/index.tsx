@@ -10,12 +10,19 @@ import { useAuth } from '../../context/AuthContext'
 import { useMatch } from '../../context/MatchContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { useEffect } from 'react'
+import { sendMessage, getIsPaired, getReachability } from 'react-native-watch-connectivity'
+import Toast from 'react-native-toast-message'
 
 
 const StartMatchScreen: React.FC = () => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const { user } = useAuth()
-  const { opponentName, gameMod, setGameMod, startMatch } = useMatch()
+  const { opponentName, gameMod, setGameMod, setOpponentName, clearState } = useMatch()
+
+  useEffect(() => {
+    setOpponentName('Opponent')
+  }, [])
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.container}>
@@ -37,17 +44,17 @@ const StartMatchScreen: React.FC = () => {
           onPress={() => navigation.navigate('PlayerDetails')}
         />
         <TextContainer marginTop>
-          <TextS color={COLORS.darkGrey}>What game?</TextS>
+          <TextS color={COLORS.darkGrey}>Match format</TextS>
         </TextContainer>
         <ListCheckboxBtn
           type="radio"
-          title="1 set with a tiebreak up to 7 points"
+          title="Single set (tiebreak to 7)"
           isChecked={gameMod === 1}
           onPress={() => setGameMod(1)}
         />
         <ListCheckboxBtn
           type="radio"
-          title="3 set with a tiebreak up to 7 points"
+          title="Best of 3 sets (tiebreak to 7)"
           isChecked={gameMod === 3}
           onPress={() => setGameMod(3)}
         />
@@ -56,12 +63,30 @@ const StartMatchScreen: React.FC = () => {
         <ButtonComponent
           title="Start on Apple Watch"
           size="M"
+          onPress={async () => {
+            const isPaired = await getIsPaired()
+            if (isPaired && await getReachability()) {
+              sendMessage(
+                { test: `test-${Math.random().toFixed(2)}` },
+              )
+            } else {
+              return Toast.show({
+                type: 'tomatoToast',
+                text1: 'Open First Serve on your Apple Watch',
+                visibilityTime: 2000,
+              })
+            }
+          }}
         />
         <ButtonComponent
           title="Start on iPhone"
           type="secondary"
           size="M"
-          onPress={() => startMatch()}
+          onPress={() => {
+            // startMatch()
+            clearState()
+            navigation.navigate('Match')
+          }}
         />
       </ButtonsBlock>
     </SafeAreaView>

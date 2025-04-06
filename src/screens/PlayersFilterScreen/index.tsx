@@ -8,13 +8,11 @@ import MatchService from '../../services/matchService'
 import { GroupedPlayers, groupPlayersByLetter } from '../../utils/matchUtils'
 import PlayersList from './PlayersList'
 import Loader from '../../components/UI/Loader'
-import { useFilters } from '../../context/FiltersContext'
 import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 
 const PlayersFilterScreen: React.FC = React.memo(() => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
-  const { playersFilter } = useFilters()
   const [data, setData] = useState<GroupedPlayers>({})
   const [loading, setLoading] = useState(true)
   const [filteredList, setFilteredList] = useState(data)
@@ -35,10 +33,8 @@ const PlayersFilterScreen: React.FC = React.memo(() => {
 
   useEffect(() => {
     const getMatches = async () => {
-      const res = await MatchService.getAll()
-      const opponentsSet = new Set(res.data.map(match => match.opponentName).sort())
-      const opponentsArray = Array.from(opponentsSet)
-      const groupedData = groupPlayersByLetter(opponentsArray)
+      const res = await MatchService.getAllOpponents()
+      const groupedData = groupPlayersByLetter(res.data.sort())
       setFilteredList(groupedData)
       setData(groupedData)
     }
@@ -60,11 +56,9 @@ const PlayersFilterScreen: React.FC = React.memo(() => {
         </ChooseFromContactsHeader>
         <Container>
           <PlayersList data={filteredList} />
-          {playersFilter.length > 0 && (
-            <ButtonContainer>
-              <ButtonComponent title="Save" size="M" onPress={() => navigation.navigate('Home')} />
-            </ButtonContainer>
-          )}
+          <ButtonContainer>
+            <ButtonComponent title="Save" size="M" onPress={() => navigation.navigate('Home')} />
+          </ButtonContainer>
         </Container>
       </>
     </TouchableWithoutFeedback>

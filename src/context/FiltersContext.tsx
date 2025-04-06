@@ -2,10 +2,10 @@ import { ReactNode, createContext, useContext, useState } from 'react'
 
 
 export enum DateFilterNames {
-  All = 'In all the time',
-  Day = 'Per day',
-  Week = 'Per week',
-  Month = 'Per month',
+  All = 'For all time',
+  Day = 'Last day',
+  Week = 'Last week',
+  Month = 'Last month',
   Other = 'Other period',
 }
 
@@ -19,6 +19,8 @@ export type FiltersContextData = {
   setOtherPeriodStartDate(value: Date | undefined): void;
   setOtherPeriodEndDate(value: Date | undefined): void;
   isFiltersApplied: boolean;
+  shouldMatchListRefreshIndicator: number;
+  triggerMatchListRefresh(): void;
 }
 
 const FiltersContext = createContext<FiltersContextData>({} as FiltersContextData)
@@ -38,8 +40,12 @@ export const FiltersProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [otherPeriodStartDate, setOtherPeriodStartDate] = useState<Date | undefined>()
   const [otherPeriodEndDate, setOtherPeriodEndDate] = useState<Date | undefined>()
   const [playersFilter, setPlayersFilter] = useState<string[]>([])
+  const [shouldMatchListRefreshIndicator, setShouldMatchListRefreshIndicator] = useState(0)
   const isFiltersApplied = playersFilter.length > 0 || dateFilter !== DateFilterNames.All
 
+  const triggerMatchListRefresh = () => {
+    setShouldMatchListRefreshIndicator(prev => prev++)
+  }
 
   const filtersContextValue: FiltersContextData = {
     dateFilter,
@@ -51,6 +57,8 @@ export const FiltersProvider: React.FC<{ children: ReactNode }> = ({ children })
     setOtherPeriodStartDate,
     setOtherPeriodEndDate,
     isFiltersApplied,
+    shouldMatchListRefreshIndicator,
+    triggerMatchListRefresh,
   }
 
   return (

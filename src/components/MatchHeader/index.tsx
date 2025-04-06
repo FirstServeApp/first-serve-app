@@ -5,15 +5,24 @@ import { useMatch } from '../../context/MatchContext'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
-const MatchHeader: React.FC = () => {
-  const { setShowMatchPopup, undo, matchHistory } = useMatch()
+const MatchHeader: React.FC= () => {
+  const { setShowMatchPopup, undo, matchChangesHistory } = useMatch()
   const { top } = useSafeAreaInsets()
-  // matchHistory.length <= 0
+
   return (
     <MatchHeaderContainer topInset={top}>
-      <IconBtn icon="arrow-left" onPress={() => undo()} disabled={false} />
+      <IconBtn
+        icon="arrow-left" type="flat"
+        onPress={() => {
+          if (matchChangesHistory.length === 0) {
+            setShowMatchPopup(true)
+          } else {
+            undo()
+          }
+        }}
+      />
       <TextS>Match tracking</TextS>
-      <IconBtn icon="more" onPress={() => setShowMatchPopup(true)} />
+      <IconBtn icon="more" type="flat" onPress={() => setShowMatchPopup(true)} />
     </MatchHeaderContainer>
   )
 }

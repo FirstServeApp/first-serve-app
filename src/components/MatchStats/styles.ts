@@ -25,6 +25,7 @@ export const StatsBlock = styled.View`
   width: 100%;
   flex: 1;
   padding: 16px;
+  padding-bottom: 0;
 `
 
 export const MatchStatsCardRow = styled.View<{ last?: boolean }>`
@@ -45,8 +46,9 @@ export const LegendBlock = styled.View`
 
 export const LegendText = styled.Text<{ alignCenter?: boolean, alignRight?: boolean, main?: boolean }>`
   ${textSmall}
-  width: ${({ main }) => main ? '46%' : '27%'};
+  /* width: ${({ main }) => main ? '46%' : '27%'}; */
   text-align: ${({ alignCenter, alignRight }) => getTextAlign(alignCenter, alignRight)};
+  flex: ${({ main }) => main ? 3 : 2};
 `
 
 export const ProgressBlockWrap = styled.View`
@@ -68,6 +70,7 @@ export const ImportantStatBlock = styled.View`
   margin-bottom: 16px;
   margin-top: 16px;;
   gap: 16px;
+  align-items: stretch;
 `
 
 export const MatchStatSmallCard = styled.View`
@@ -78,7 +81,7 @@ export const MatchStatSmallCard = styled.View`
   padding: 16px 8px 8px;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex: 1;
   gap: 12px;
 `

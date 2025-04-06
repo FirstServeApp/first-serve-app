@@ -10,6 +10,7 @@ import {
 import { Game } from '../../services/matchService'
 import COLORS from '../../styles/colors'
 import { getMatchDuration } from '../../utils/matchUtils'
+import { memo } from 'react'
 
 
 const getValidScore = (score: number) => {
@@ -65,7 +66,7 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
               <TextS color={COLORS.darkGrey}>Time: {getMatchDuration(game.duration)}</TextS>
             </LeftBlock>
             <RightBlock>
-              <TextS color={COLORS.primary}>{game.myScore}</TextS>
+              <TextS color={COLORS.darkPrimary}>{game.myScore}</TextS>
               <TextS> - </TextS>
               <TextS color={COLORS.red}>{game.opponentScore}</TextS>
             </RightBlock>
@@ -73,7 +74,7 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
           <HistoryBlock>
             <MatchHistoryCardRow>
               <RightBlock>
-                <TextS color={COLORS.primary}>00</TextS>
+                <TextS color={COLORS.darkPrimary}>00</TextS>
                 <TextS> - </TextS>
                 <TextS color={COLORS.red}>00</TextS>
               </RightBlock>
@@ -99,7 +100,7 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
               return (
                 <MatchHistoryCardRow key={index}>
                   <RightBlock>
-                    <TextS color={COLORS.primary}>{getValidScore(item.myScore)}</TextS>
+                    <TextS color={COLORS.darkPrimary}>{getValidScore(item.myScore)}</TextS>
                     <TextS> - </TextS>
                     <TextS color={COLORS.red}>{getValidScore(item.opponentScore)}</TextS>
                   </RightBlock>
@@ -118,4 +119,5 @@ const HistoryCard: React.FC<Props> = ({ games }) => {
   )
 }
 
-export default HistoryCard
+
+export default memo(HistoryCard)

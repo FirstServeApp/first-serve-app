@@ -24,6 +24,10 @@ class UserService {
     return await $api.patch<AxiosRequestConfig, { data: { imageUrl: string } }>('/user/change/avatar', { image })
   }
 
+  async changeName(name: string) {
+    return await $api.patch<AxiosRequestConfig, UserRes>('/user/change/name', { name })
+  }
+
   async deleteAccount() {
     return await $api.delete('/user/delete')
   }

@@ -11,9 +11,3 @@ export const Container = styled.View`
 export const TextContainer = styled.View`
   margin-bottom: 4px; /* FIXME: I need to fix input's styles, because now input has 12px margin top */
 `
-
-export const SettingsBlock = styled.View``
-
-export const ButtonsBlock = styled.View`
-  gap: 12px;
-`

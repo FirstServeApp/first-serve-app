@@ -4,7 +4,11 @@ import { useAuth } from '../context/AuthContext'
 import Loader from '../components/UI/Loader'
 
 
-const RootNavigation = () => {
+type Props = {
+  setAppIsReady: (value: boolean) => void
+}
+
+const RootNavigation = ({ setAppIsReady }: Props) => {
   const { user, loading } = useAuth()
   const showLoader = loading === undefined ? true : loading
 
@@ -15,6 +19,8 @@ const RootNavigation = () => {
       <Loader />
     )
   }
+
+  setAppIsReady(!showLoader)
 
   return isAuthenticated ? (
     <AuthenticatedNavigation />

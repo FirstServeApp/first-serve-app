@@ -17,10 +17,11 @@ const OneFieldForm: React.FC<Props> = ({ name, secure, ...rest }) => {
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
-            maxLength={24}
+            maxLength={128}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            autoFocus
             error={errors[name]?.message?.toString()}
             secure={secure}
             {...rest}

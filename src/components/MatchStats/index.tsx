@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import MatchButtonGroup, { ButtonGroupNames } from '../MatchButtonGroup'
 import {
   MatchStatsCard,
@@ -14,17 +14,18 @@ import {
 } from './styles'
 import { TextS } from '../../styles/typography'
 import ProgressBar from '../UI/ProgressBar'
-import { MatchDetails } from '../../services/matchService'
+import { MatchDetails, MatchDetailsDTO } from '../../services/matchService'
 import { getStatInfo } from '../../utils/statUtils'
 import COLORS from '../../styles/colors'
 import CircleProgressBar from '../CircleProgressBar'
 
 
 type Props = {
-  data: MatchDetails;
+  matchDetails: MatchDetails;
 }
 
-const MatchStats: React.FC<Props> = ({ data }) => {
+const MatchStats: React.FC<Props> = ({ matchDetails }) => {
+  const data = new MatchDetailsDTO(matchDetails)
   const [selectedBtn, setSelectedBtn] = useState<ButtonGroupNames>(ButtonGroupNames.All)
   const totalWon = getStatInfo(data, 'totalWon', selectedBtn)
   const totalServiceWon = getStatInfo(data, 'totalServiceWon', selectedBtn)
@@ -33,11 +34,13 @@ const MatchStats: React.FC<Props> = ({ data }) => {
   return (
     <>
       {data.aces.bySet.length > 1 && (
-        <MatchButtonGroup selectedBtn={selectedBtn} setSelectedBtn={setSelectedBtn} />
+        <MatchButtonGroup
+          setsCount={data.aces.bySet.length}
+          selectedBtn={selectedBtn} setSelectedBtn={setSelectedBtn} />
       )}
       <ImportantStatBlock>
         <MatchStatSmallCard>
-          <MatchStatSmallCardText>Total points wons</MatchStatSmallCardText>
+          <MatchStatSmallCardText>Total points won</MatchStatSmallCardText>
           <CircleProgressBar
             size={80}
             progress={+(totalWon?.myPercent || 0)}
@@ -45,7 +48,7 @@ const MatchStats: React.FC<Props> = ({ data }) => {
           />
         </MatchStatSmallCard>
         <MatchStatSmallCard>
-          <MatchStatSmallCardText>Total service wons</MatchStatSmallCardText>
+          <MatchStatSmallCardText>Total service won</MatchStatSmallCardText>
           <CircleProgressBar
             size={80}
             progress={+(totalServiceWon?.myPercent || 0)}
@@ -53,7 +56,7 @@ const MatchStats: React.FC<Props> = ({ data }) => {
           />
         </MatchStatSmallCard>
         <MatchStatSmallCard>
-          <MatchStatSmallCardText>Total return wons</MatchStatSmallCardText>
+          <MatchStatSmallCardText>Total return{'\n'}won</MatchStatSmallCardText>
           <CircleProgressBar
             size={80}
             progress={+(totalReturnWon?.myPercent || 0)}
@@ -107,4 +110,4 @@ const MatchStats: React.FC<Props> = ({ data }) => {
   )
 }
 
-export default MatchStats
+export default memo(MatchStats)

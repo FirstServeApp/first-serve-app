@@ -1,6 +1,6 @@
 import ButtonComponent from '../../components/UI/Button'
 import { Header2, TextS } from '../../styles/typography'
-import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { styles } from '../../components/UI/Container'
 import { Subtitle, LinkWrap } from './styles'
 import Link from '../../components/UI/Link'
 import { useNavigation } from '@react-navigation/native'
@@ -11,41 +11,44 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { LoginFormData, loginSchema } from '../../validations/authValidations'
 import SocialSigninBtns from '../../components/UI/SocialBtnsBlock'
 import { useAuth } from '../../context/AuthContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import Toast from 'react-native-toast-message'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
+import { getButtonsBlockStyles, keyboardDidHideListener, keyboardDidShowListener } from '../../utils/keyboardUtils'
 
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<UnauthenticatedNavigationProps>()
+  const [keyboardOffset, setKeyboardOffset] = useState<number>(0)
   const [isLoading, setLoading] = useState(false)
   const methods = useForm<LoginFormData>({
     resolver: yupResolver(loginSchema),
     mode: 'onBlur',
   })
   const { login } = useAuth()
+  const { bottom } = useSafeAreaInsets()
+  const { buttonsBlock, onKeyboardOpen } = getButtonsBlockStyles(bottom, keyboardOffset)
 
   const onLogin: SubmitHandler<LoginFormData> = async data => {
     setLoading(true)
     await login(data.email, data.password)
-      .then(err => {
-        if (err === '500') {
-          Toast.show({
-            type: 'tomatoToast',
-            text1: 'Something went wrong, please try again',
-            visibilityTime: 2000,
-          })
-
-          methods.reset()
-          return setLoading(false)
-        } else if (err === '400') {
-          methods.setError('password', { message: 'Invalid email or password', type: 'onBlur' })
+      .catch(err => {
+        if (err instanceof Error) {
+          methods.setError('email', { message: err.message, type: 'onBlur' })
           return setLoading(false)
         }
       })
   }
+
+  useEffect(() => {
+    const show = keyboardDidShowListener(setKeyboardOffset)
+    const hide = keyboardDidHideListener(setKeyboardOffset)
+    return () => {
+      show.remove()
+      hide.remove()
+    }
+  }, [])
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -60,7 +63,7 @@ const LoginScreen: React.FC = () => {
           <LoginForm loading={isLoading} />
         </FormProvider>
         <SocialSigninBtns />
-        <ButtonsBlock>
+        <View style={[buttonsBlock, !!keyboardOffset && onKeyboardOpen]}>
           <ButtonComponent
             title="Login"
             loading={isLoading}
@@ -70,7 +73,7 @@ const LoginScreen: React.FC = () => {
           <LinkWrap>
             <Link onPress={() => navigation.navigate('PasswordRecoveryStep1')}>Forgot password</Link>
           </LinkWrap>
-        </ButtonsBlock>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )

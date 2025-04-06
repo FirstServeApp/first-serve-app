@@ -20,7 +20,7 @@ const SearchBar: React.FC<Props> = ({ onChange }) => {
         cursorColor={COLORS.black}
         onChangeText={onChange}
         // value={value}
-        maxLength={16}
+        maxLength={64}
         textAlignVertical="center"
       />
     </SearchBarContainer>

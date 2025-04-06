@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useRef, useEffect, useCallback } from 'react'
 import {
   BottomSheetModal,
@@ -5,8 +6,10 @@ import {
   BottomSheetBackdropProps,
   BottomSheetBackdrop,
   BottomSheetProps,
+  BottomSheetView,
 } from '@gorhom/bottom-sheet'
 import { bottomSheetStyles } from './styles'
+import COLORS from '../../../styles/colors'
 
 
 interface Props extends BottomSheetProps {
@@ -38,6 +41,7 @@ const BottomSheetPopup2: React.FC<Props> = ({ children, visible, onClose, ...res
     <BottomSheetModalProvider>
       <BottomSheetModal
         enableDismissOnClose
+        enableDynamicSizing
         {...rest}
         ref={sheetRef}
         index={0}
@@ -45,8 +49,11 @@ const BottomSheetPopup2: React.FC<Props> = ({ children, visible, onClose, ...res
         onDismiss={onClose}
         backgroundStyle={bottomSheetStyles}
         backdropComponent={renderBackdrop}
+        handleIndicatorStyle={{ backgroundColor: COLORS.grey, width: 40, height: 4 }}
       >
-        {children}
+        <BottomSheetView>
+          {children}
+        </BottomSheetView>
       </BottomSheetModal>
     </BottomSheetModalProvider>
   )

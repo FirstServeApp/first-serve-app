@@ -30,14 +30,14 @@ export const TopBlockWrap = styled.View`
 export const ButtonContainer = styled.View<{ bottomInset: number }>`
   width: 100%;
   padding: 16px;
-  padding-bottom: ${({ bottomInset }) => `${bottomInset}px`};
+  padding-bottom: ${({ bottomInset }) => `${bottomInset + 16}px`};
   flex-direction: column;
   justify-content: center;
   align-items: center;
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   background: white;
-  gap: 16px;
+  gap: 12px;
 `
 
 export const ButtonRow = styled.View`
@@ -62,6 +62,20 @@ export const MatchCardContainer = styled.View`
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   background: white;
+`
+
+export const PlayerIndicator = styled.View<{ color?: string }>`
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: ${({ color }) => color};
+`
+
+export const PlayerSection = styled.View`
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
 `
 
 export const MatchCardBottomSection = styled.View`
@@ -106,7 +120,7 @@ export const BottomScoreBlock = styled.View`
   padding-bottom: 8px;
 `
 
-export const TopCell = styled.View`
+export const TopCell = styled.View<{ last?: boolean }>`
   width: 40px;
   padding-top: 8px;
   padding-bottom: 16px;
@@ -114,9 +128,10 @@ export const TopCell = styled.View`
   align-items: center;
   border-left-width: 1px;
   border-left-color: ${bgGrey};
+  margin-right: ${({ last }) => last ? '-8px' : '0'};
 `
 
-export const BottomCell = styled.View`
+export const BottomCell = styled.View<{ last?: boolean }>`
   width: 40px;
   padding-top: 16px;
   padding-bottom: 8px;
@@ -124,6 +139,7 @@ export const BottomCell = styled.View`
   align-items: center;
   border-left-width: 1px;
   border-left-color: ${bgGrey};
+  margin-right: ${({ last }) => last ? '-8px' : '0'};
 `
 
 export const TopIconCell = styled.View`

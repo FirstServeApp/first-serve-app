@@ -19,7 +19,9 @@ const RegistrationForm: React.FC<Props> = ({ loading }) => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            maxLength={16}
+            maxLength={64}
+            autoFocus
+            autoCapitalize="words"
             error={errors.name?.message?.toString()}
             editable={!loading}
           />
@@ -35,7 +37,7 @@ const RegistrationForm: React.FC<Props> = ({ loading }) => {
             autoComplete="email"
             inputMode="email"
             keyboardType="email-address"
-            maxLength={24}
+            maxLength={128}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}

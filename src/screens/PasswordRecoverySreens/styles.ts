@@ -8,7 +8,7 @@ export const Subtitle = styled.View`
 
 export const LinkWrap = styled.View`
   width: 100%;
-  align-items: center
+  align-items: center;
 `
 
 export const FinalImageContainer = styled.View`

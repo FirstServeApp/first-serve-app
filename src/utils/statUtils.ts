@@ -28,9 +28,9 @@ const getTextByFieldName = (field: DataItem) => {
     case 'secondServes':
       return '2nd Serve in'
     case 'firstServePointsWon':
-      return '1st Serve points won'
+      return '1st Serve won'
     case 'secondServePointsWon':
-      return '2nd Serve points won'
+      return '2nd Serve won'
     case 'breakPointsWon':
       return 'Break points won'
     case 'aggressiveMargin':

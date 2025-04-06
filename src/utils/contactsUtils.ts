@@ -8,7 +8,7 @@ export const groupContactsByLetter = (contacts: Contacts.Contact[]) => {
   const groupedData: GroupedContacts = {}
 
   contacts.forEach(contact => {
-    const firstLetter = contact.name.charAt(0).toUpperCase()
+    const firstLetter = contact.name?.charAt(0).toUpperCase()
     if (!groupedData[firstLetter]) {
       groupedData[firstLetter] = []
     }

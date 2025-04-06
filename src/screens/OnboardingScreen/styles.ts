@@ -26,13 +26,13 @@ export const SlideHeader = styled.Text`
   text-align: center;
 `
 
-export const IndicatorContainer = styled.View`
+export const IndicatorContainer = styled.View<{ topInset: number }>`
   flex-direction: row;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
   position: absolute;
-  top: 16px;
+  top: ${props => `${props.topInset + 16}px`};
   width: 100%;
 `
 

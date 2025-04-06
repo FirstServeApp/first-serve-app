@@ -18,7 +18,8 @@ const ChooseFromContactsScreen: React.FC<Props> = React.memo(({ route }) => {
   const navigation = useNavigation<AuthenticatedNavigationProps>()
   const [contacts, setContacts] = useState<GroupedContacts>({})
   const [filteredList, setFilteredList] = useState(contacts)
-  const { opponentName } = useMatch()
+  const [selectedContact, setSelectedContact] = useState<string>('')
+  const { setNewOpponentName } = useMatch()
 
   const filterBySearch = useCallback((query: string) => {
     const filteredData: GroupedContacts = {}
@@ -57,10 +58,28 @@ const ChooseFromContactsScreen: React.FC<Props> = React.memo(({ route }) => {
           <SearchBar onChange={filterBySearch} />
         </ChooseFromContactsHeader>
         <Container>
-          <ContactList data={filteredList} player={route.params.player} />
-          {opponentName && (
+          <ContactList
+            contact={selectedContact}
+            setContact={setSelectedContact} data={filteredList}
+            player={route.params.player} />
+          {selectedContact && (
             <ButtonContainer>
-              <ButtonComponent title="Select contact" size="M" onPress={() => navigation.navigate('PlayerDetails')} />
+              <ButtonComponent
+                title="Select contact" size="M"
+                onPress={() => {
+                  setNewOpponentName(selectedContact)
+                  if (route.params.from.name === 'PlayerDetails') {
+                    // navigation.navigate('PlayerDetails')
+                    navigation.goBack()
+                  } else {
+                    navigation.navigate('EditMatch', {
+                      id: route.params.from.params.id,
+                      opponentName: selectedContact,
+                    })
+                  }
+                  // navigation.goBack()
+                }}
+              />
             </ButtonContainer>
           )}
         </Container>

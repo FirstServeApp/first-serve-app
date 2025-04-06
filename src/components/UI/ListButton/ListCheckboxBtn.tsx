@@ -14,18 +14,18 @@ interface Props extends TouchableOpacityProps {
 
 const ListCheckboxBtn: React.FC<Props> = ({ title, isChecked, type, ...rest }) => {
   return (
-    <ListCheckboxButtonWrap>
+    <ListCheckboxButtonWrap {...rest}>
       <LeftBlock>
         <TextL>{title}</TextL>
       </LeftBlock>
       {type === 'radio' ? (
         <RadioBtn
-          {...rest}
+          disabled
           isChecked={isChecked}
         />
       ) : (
         <Checkbox
-          {...rest}
+          disabled
           isChecked={isChecked}
         />
       )}

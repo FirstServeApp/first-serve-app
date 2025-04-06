@@ -1,17 +1,18 @@
 import styled from 'styled-components/native'
+import { h3 } from '../../styles/mixins'
 
 
 export const MatchPopupContainer = styled.View<{ bottomInset?: number }>`
-flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  padding-bottom: ${({bottomInset}) => bottomInset}px;
+  padding-bottom: ${({bottomInset}) => bottomInset || 0 + 16}px;
 `
 
 export const HeaderBlock = styled.View`
   width: 100%;
+  padding-bottom: 24px;
 `
 
 export const HeaderWrap = styled.View`
@@ -19,11 +20,12 @@ export const HeaderWrap = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
 `
 
-export const ConfirmSubtitleWrap = styled.View`
-  width: 100%;
-  margin-bottom: 24px;
+export const ConfirmPopupHeader = styled.Text`
+  ${h3}
+  max-width: 80%;
 `
 
 export const BtnsListContainer = styled.View`
@@ -42,5 +44,5 @@ export const PopupBtnsContainer = styled.View`
 `
 
 export const PopupBtn = styled.View`
-  width: 50%;
+  flex: 1;
 `

@@ -12,10 +12,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { OpponentNameFormData, opponentNameSchema } from '../../validations/matchValidations'
 import matchService from '../../services/matchService'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { styles, ButtonsBlock } from '../../components/UI/Container'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { styles } from '../../components/UI/Container'
 import { usePopup } from '../../context/PopupContext'
-import { TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { TouchableWithoutFeedback, Keyboard, View, StyleSheet } from 'react-native'
 
 
 type Props = NativeStackScreenProps<AuthenticatedStackParams, 'EditMatch'>
@@ -31,11 +31,13 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
       opponentName: route.params.opponentName,
     },
   })
+  const [keyboardOffset, setKeyboardOffset] = useState(0)
+  const { bottom } = useSafeAreaInsets()
 
   const onChooseFromContacts = async () => {
     const permisson = await Contacts.requestPermissionsAsync()
     if (permisson.granted) {
-      navigation.navigate('ChooseFromContacts', { player: 'opponent' })
+      navigation.navigate('ChooseFromContacts', { player: 'opponent', from: route })
     }
   }
 
@@ -46,13 +48,46 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
         await matchService.changeOpponentName(data.opponentName, route.params.id)
       }
 
-      navigation.navigate('Home')
+      methods.setValue('opponentName', data.opponentName)
+      navigation.navigate('MatchStats', { matchId: route.params.id, opponentName: data.opponentName })
     })().finally(() => setLoading(false))
   }
 
   useEffect(() => {
     setMatchId(route.params.id)
+    const keyboardDidShowListener = Keyboard.addListener('keyboardWillShow', event => {
+      if (event.startCoordinates?.height) {
+        setKeyboardOffset(event.endCoordinates.height)
+      }
+    })
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardWillHide', () => {
+      setKeyboardOffset(0)
+    })
+
+    return () => {
+      keyboardDidShowListener.remove()
+      keyboardDidHideListener.remove()
+    }
   }, [])
+  useEffect(() => {
+    if (route.params.opponentName !== undefined) {
+      methods.setValue('opponentName', route.params.opponentName)
+    }
+  }, [route.params.opponentName])
+
+  const btnStyles = StyleSheet.create({
+    buttonsBlock: {
+      right: 16,
+      left: 16,
+      position: 'absolute',
+      gap: 12,
+      bottom: bottom,
+    },
+    onKeybordOpen: {
+      bottom: keyboardOffset + 16,
+    },
+  })
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -65,11 +100,11 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
             <OneFieldForm
               name="opponentName"
               placeholder="Opponent"
-              maxLength={16}
+              maxLength={48}
             />
           </FormProvider>
         </SettingsBlock>
-        <ButtonsBlock>
+        <View style={[btnStyles.buttonsBlock, !!keyboardOffset && btnStyles.onKeybordOpen]}>
           <ButtonComponent title="Save" onPress={onSave} loading={isLoading} />
           <ButtonComponent
             title="Select from contacts"
@@ -77,7 +112,7 @@ const EditMatchScreen: React.FC<Props> = React.memo(({ route }) => {
             icon="group"
             onPress={onChooseFromContacts}
           />
-        </ButtonsBlock>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   )

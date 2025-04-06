@@ -16,7 +16,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-nativ
 import { Dimensions } from 'react-native'
 import { Illustration, IllustrationsNames } from '../../components/UI/Illustration'
 import { StoreKeys, setItemInStore } from '../../utils/secureStoreUtils'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
 const { width } = Dimensions.get('window')
@@ -47,6 +47,7 @@ const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation<UnauthenticatedNavigationProps>()
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const scrollViewRef = useRef<ScrollView>(null)
+  const { top } = useSafeAreaInsets()
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x
@@ -83,7 +84,7 @@ const OnboardingScreen: React.FC = () => {
           </SlideContainer>
         ))}
       </ScrollView>
-      <IndicatorContainer>
+      <IndicatorContainer topInset={top}>
         {slides.map((_, index) => {
           if (index === currentIndex) {
             return (

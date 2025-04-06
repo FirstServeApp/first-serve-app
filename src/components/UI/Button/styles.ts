@@ -95,5 +95,4 @@ export const NavigationLinkContainer = styled.TouchableOpacity`
   height: 24px;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
 `

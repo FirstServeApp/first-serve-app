@@ -22,7 +22,6 @@ export const StatsBlockContainer = styled.View`
   padding: 0 16px 24px;
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
-  flex: 1;
 `
 
 export const styles = StyleSheet.create({

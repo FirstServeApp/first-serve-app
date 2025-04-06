@@ -1,15 +1,34 @@
 {
+  "cli": {
+    "version": ">=0.54.1"
+  },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": true,
+        "simulator": true
       }
     },
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      // "node": "16.18.0"
+      "node": "20.5.0",
+      "ios": {
+        "image": "latest"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "matveyseliverstov@firstserve.app",
+        "ascAppId": "6449864480",
+        "appleTeamId": "496A22MD8K",
+        "sku": "FirstServe2023"
+      }
+    }
   }
 }

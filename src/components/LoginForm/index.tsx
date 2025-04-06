@@ -20,7 +20,8 @@ const LoginForm: React.FC<Props> = ({ loading }) => {
             autoComplete="email"
             inputMode="email"
             keyboardType="email-address"
-            maxLength={24}
+            autoFocus
+            maxLength={128} // 320
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -38,7 +39,7 @@ const LoginForm: React.FC<Props> = ({ loading }) => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            maxLength={16}
+            maxLength={128}
             error={errors.password?.message?.toString()}
             editable={!loading}
             secure

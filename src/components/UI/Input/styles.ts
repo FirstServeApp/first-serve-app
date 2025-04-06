@@ -18,7 +18,7 @@ export const InputContainer = styled.View<{ error?: string }>`
 
 export const InputField = styled.TextInput`
   ${textSmall}
-  padding: 10px 4px 10px 0;
+  padding: 12px 0;
   flex: 1;
   text-align-vertical: center;
 `
@@ -43,4 +43,5 @@ export const SearchBarField = styled.TextInput`
   padding-left: 12px;
   flex: 1;
   text-align-vertical: center;
+  align-items: center;
 `

@@ -1,11 +1,16 @@
-import { useState } from 'react'
+/* eslint-disable react-native/no-inline-styles */
+import { memo, useState } from 'react'
 import MatchButtonGroup, { ButtonGroupNames } from '../MatchButtonGroup'
 import { ToggleBtnsNames } from '../ToggleGroup'
 import {
   MatchHistoryList,
+  EmptyHistoryContainer,
 } from './styles'
 import { Match, Set } from '../../services/matchService'
 import HistoryCard from './HistoryCard'
+import { Illustration } from '../UI/Illustration'
+import { TextL } from '../../styles/typography'
+import COLORS from '../../styles/colors'
 
 
 type Props = {
@@ -35,13 +40,26 @@ const MatchHistory: React.FC<Props> = ({ data }) => {
   return (
     <>
       {data.sets.length > 1 && (
-        <MatchButtonGroup selectedBtn={selectedBtn} setSelectedBtn={setSelectedBtn} mode={ToggleBtnsNames.History} />
+        <MatchButtonGroup
+          setsCount={data.sets.length}
+          selectedBtn={selectedBtn} setSelectedBtn={setSelectedBtn}
+          mode={ToggleBtnsNames.History} />
       )}
-      <MatchHistoryList>
-        <HistoryCard games={data.sets[getIndex(selectedBtn, data.sets.length)].games} />
-      </MatchHistoryList>
+      {data.sets[getIndex(selectedBtn, data.sets.length)].games.length === 0 && (
+        <EmptyHistoryContainer>
+          <Illustration name="empty-history" />
+          <TextL color={COLORS.darkGrey} style={{ textAlign: 'center' }}>
+            There is no match history{'\n'}in the game
+          </TextL>
+        </EmptyHistoryContainer>
+      )}
+      {data.sets[getIndex(selectedBtn, data.sets.length)].games.length > 0 && (
+        <MatchHistoryList>
+          <HistoryCard games={data.sets[getIndex(selectedBtn, data.sets.length)].games} />
+        </MatchHistoryList>
+      )}
     </>
   )
 }
 
-export default MatchHistory
+export default memo(MatchHistory)

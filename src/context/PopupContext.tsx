@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useContext, useState } from 'react'
-import ConfirmPopup from '../components/MatchPopup/ConfirmPopup'
 import ButtonComponent from '../components/UI/Button'
+import DeleteMatchPopup from '../components/DeleteMatchPopup'
 import matchService from '../services/matchService'
 import { useNavigation } from '@react-navigation/native'
 import { AuthenticatedNavigationProps } from '../navigation/AuthenticatedNavigation'
@@ -72,9 +72,7 @@ export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   return (
     <PopupContext.Provider value={popupContextValue}>
       {children}
-      <ConfirmPopup
-        title={'Are you sure you want\nto delete the match?'}
-        height="25%"
+      <DeleteMatchPopup
         visible={visiblePopup === PopupNames.DeleteMatch}
         onClose={closeAll}
       >
@@ -84,7 +82,7 @@ export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           loading={isLoading}
           onPress={deleteMatch}
         />
-      </ConfirmPopup>
+      </DeleteMatchPopup>
       <ProfilePopup visible={visiblePopup === PopupNames.Profile} onClose={closeAll} />
       <FiltersPopup onClose={closeAll} visible={visiblePopup === PopupNames.Filters} />
     </PopupContext.Provider>
